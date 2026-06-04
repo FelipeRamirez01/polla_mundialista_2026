@@ -1,0 +1,222 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+
+    <!-- TITULO -->
+    <div class="text-center mb-4">
+
+        <h1 class="fw-bold text-primary">
+
+            <i class="bi bi-people-fill"></i>
+
+            Administración de Grupos
+
+        </h1>
+
+        <p class="text-muted">
+
+            Crea y administra los grupos de la polla mundialista
+
+        </p>
+
+    </div>
+
+
+    <!-- FORMULARIO -->
+    <div class="card shadow-lg border-0 mb-4">
+
+        <div class="card-header bg-primary text-white">
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-plus-circle-fill"></i>
+
+                Crear Grupo
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST"
+                  action="{{ url_for('crear_grupo') }}">
+
+                <div class="row">
+
+                    <div class="col-md-5 mb-3">
+
+                        <label class="form-label">
+                            Nombre del Grupo
+                        </label>
+
+                        <input type="text"
+                               name="nombre"
+                               class="form-control"
+                               required>
+
+                    </div>
+
+                    <div class="col-md-5 mb-3">
+
+                        <label class="form-label">
+                            Código de Ingreso
+                        </label>
+
+                        <input type="text"
+                               name="codigo"
+                               class="form-control"
+                               required>
+
+                    </div>
+
+                    <div class="col-md-2 d-flex align-items-end">
+
+                        <button type="submit"
+                                class="btn btn-success w-100">
+
+                            <i class="bi bi-save-fill"></i>
+
+                            Guardar
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABLA -->
+    <div class="card shadow-lg border-0">
+
+        <div class="card-header bg-dark text-white">
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-list-ul"></i>
+
+                Lista de Grupos
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if grupos %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle text-center">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Código</th>
+                            <th>Acciones</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for grupo in grupos %}
+
+                        <tr>
+
+                            <td>
+                                {{ grupo.id }}
+                            </td>
+
+                            <td>
+
+                                <form method="POST"
+                                      action="{{ url_for('editar_grupo', id=grupo.id) }}">
+
+                                    <input type="text"
+                                           name="nombre"
+                                           value="{{ grupo.nombre }}"
+                                           class="form-control">
+
+                            </td>
+
+                            <td>
+
+                                    <input type="text"
+                                           name="codigo"
+                                           value="{{ grupo.codigo }}"
+                                           class="form-control">
+
+                            </td>
+
+                            <td>
+
+                                    <div class="d-flex gap-2 justify-content-center">
+
+                                        <button type="submit"
+                                                class="btn btn-warning btn-sm">
+
+                                            <i class="bi bi-pencil-fill"></i>
+
+                                            Editar
+
+                                        </button>
+
+                                </form>
+
+                                <a href="{{ url_for('eliminar_grupo', id=grupo.id) }}"
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('¿Desea eliminar este grupo?')">
+
+                                    <i class="bi bi-trash-fill"></i>
+
+                                    Eliminar
+
+                                </a>
+
+                                    </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+                <div class="alert alert-warning text-center">
+
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+
+                    No hay grupos registrados.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

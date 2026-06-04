@@ -1,0 +1,79 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card">
+
+        <div class="card-header">
+            Crear Usuario
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <input type="text"
+                       name="nombre"
+                       class="form-control mb-3"
+                       placeholder="Nombre"
+                       required>
+
+                <input type="email"
+                       name="correo"
+                       class="form-control mb-3"
+                       placeholder="Correo"
+                       required>
+
+                <input type="password"
+                       name="password"
+                       class="form-control mb-3"
+                       placeholder="Contraseña"
+                       required>
+
+                <select name="rol_id"
+                        class="form-select mb-3">
+
+                    {% for rol in roles %}
+
+                    <option value="{{ rol.id }}">
+                        {{ rol.nombre }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <select name="grupo_id"
+                        class="form-select mb-3">
+
+                    {% for grupo in grupos %}
+
+                    <option value="{{ grupo.id }}">
+                        {{ grupo.nombre }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <button class="btn btn-success">
+                    Guardar
+                </button>
+
+                <a href="/admin/usuarios"
+                   class="btn btn-secondary">
+
+                    Volver
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

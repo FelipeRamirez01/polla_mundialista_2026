@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+
+    <div class="text-center mb-5">
+
+        <h1 class="fw-bold text-primary">
+
+            <i class="bi bi-award-fill"></i>
+
+            Mejores Terceros
+
+        </h1>
+
+        <p class="text-muted">
+
+            Clasificados a Dieciseisavos según tus predicciones
+
+        </p>
+
+    </div>
+
+    <!-- CLASIFICADOS -->
+    <div class="card shadow-lg border-0 mb-5">
+
+        <div class="card-header bg-success text-white">
+
+            <h4 class="mb-0">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+                Los 8 Mejores Terceros Clasificados
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                {% for equipo in mejores_8 %}
+
+                <div class="col-md-3 mb-4">
+
+                    <div class="card border-success shadow-sm h-100">
+
+                        <div class="card-body text-center">
+
+                            <span class="badge bg-success mb-2">
+
+                                Grupo {{ equipo.grupo }}
+
+                            </span>
+
+                            <h5 class="fw-bold">
+
+                                {{ equipo.equipo }}
+
+                            </h5>
+
+                            <hr>
+
+                            <p class="mb-1">
+                                <strong>Puntos:</strong>
+                                {{ equipo.puntos }}
+                            </p>
+
+                            <p class="mb-1">
+                                <strong>DG:</strong>
+                                {{ equipo.dg }}
+                            </p>
+
+                            <p class="mb-0">
+                                <strong>GF:</strong>
+                                {{ equipo.gf }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TABLA COMPLETA -->
+    <div class="card shadow-lg border-0">
+
+        <div class="card-header bg-dark text-white">
+
+            <h4 class="mb-0">
+
+                Ranking Completo de Terceros
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle text-center">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>#</th>
+                            <th>Grupo</th>
+                            <th>Equipo</th>
+                            <th>Puntos</th>
+                            <th>DG</th>
+                            <th>GF</th>
+                            <th>Estado</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for equipo in terceros %}
+
+                        <tr>
+
+                            <td>
+
+                                {{ loop.index }}
+
+                            </td>
+
+                            <td>
+
+                                {{ equipo.grupo }}
+
+                            </td>
+
+                            <td class="fw-bold">
+
+                                {{ equipo.equipo }}
+
+                            </td>
+
+                            <td>
+
+                                {{ equipo.puntos }}
+
+                            </td>
+
+                            <td>
+
+                                {{ equipo.dg }}
+
+                            </td>
+
+                            <td>
+
+                                {{ equipo.gf }}
+
+                            </td>
+
+                            <td>
+
+                                {% if loop.index <= 8 %}
+
+                                    <span class="badge bg-success">
+
+                                        Clasificado
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-danger">
+
+                                        Eliminado
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- BOTÓN -->
+    <div class="text-center mt-5">
+
+        <a href="{{ url_for('clasificacion_16') }}"
+           class="btn btn-primary btn-lg shadow">
+
+            <i class="bi bi-diagram-3-fill"></i>
+
+            Generar Cruces de Dieciseisavos
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

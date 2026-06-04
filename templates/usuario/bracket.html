@@ -1,0 +1,706 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid mt-4 mb-5">
+
+    <!-- TITULO -->
+    <div class="text-center mb-5">
+
+        <h1 class="fw-bold text-primary">
+
+            <i class="bi bi-trophy-fill"></i>
+
+            Mi Mundial 2026
+
+        </h1>
+
+        <p class="text-muted fs-5">
+
+            Resumen completo de mis predicciones
+
+        </p>
+
+    </div>
+
+    <!-- ========================================= -->
+    <!-- FASE DE GRUPOS -->
+    <!-- ========================================= -->
+
+    <div class="card shadow-lg mb-5">
+
+        <div class="card-header bg-primary text-white">
+
+            <h3 class="mb-0">
+
+                ⚽ Fase de Grupos
+
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            {% for grupo, partidos in grupos.items() %}
+
+                <div class="card shadow-sm mb-4">
+
+                    <div class="card-header bg-light">
+
+                        <h4 class="mb-0">
+
+                            Grupo {{ grupo }}
+
+                        </h4>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="table-responsive">
+
+                            <table class="table table-bordered table-hover">
+
+                                <thead class="table-light">
+
+                                    <tr>
+
+                                        <th>Local</th>
+
+                                        <th width="150">
+
+                                            Resultado
+
+                                        </th>
+
+                                        <th>Visitante</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    {% for partido in partidos %}
+
+                                    <tr>
+
+                                        <td>
+
+                                            {{ partido.equipo_local }}
+
+                                        </td>
+
+                                        <td class="text-center">
+
+                                            {% if partido.id in predicciones_dict %}
+
+                                                <strong>
+
+                                                    {{ predicciones_dict[partido.id].goles_local }}
+
+                                                    -
+
+                                                    {{ predicciones_dict[partido.id].goles_visitante }}
+
+                                                </strong>
+
+                                            {% else %}
+
+                                                <span class="text-muted">
+
+                                                    Sin predicción
+
+                                                </span>
+
+                                            {% endif %}
+
+                                        </td>
+
+                                        <td>
+
+                                            {{ partido.equipo_visitante }}
+
+                                        </td>
+
+                                    </tr>
+
+                                    {% endfor %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <!-- ========================================= -->
+    <!-- TABLAS DE POSICIONES -->
+    <!-- ========================================= -->
+
+    <div class="card shadow-lg mb-5">
+
+        <div class="card-header bg-success text-white">
+
+            <h3 class="mb-0">
+
+                📊 Tabla de Posiciones
+
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                {% for grupo, tabla in tablas.items() %}
+
+                <div class="col-lg-4 mb-4">
+
+                    <div class="card border-success shadow-sm">
+
+                        <div class="card-header bg-success text-white">
+
+                            Grupo {{ grupo }}
+
+                        </div>
+
+                        <div class="card-body p-0">
+
+                            <table class="table table-sm table-striped mb-0">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>#</th>
+
+                                        <th>Equipo</th>
+
+                                        <th>Pts</th>
+
+                                        <th>DG</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    {% for equipo, datos_equipo in tabla %}
+
+                                    <tr>
+
+                                        <td>
+
+                                            {{ loop.index }}
+
+                                        </td>
+
+                                        <td>
+
+                                            {{ equipo }}
+
+                                        </td>
+
+                                        <td>
+
+                                            {{ datos_equipo.puntos }}
+
+                                        </td>
+
+                                        <td>
+
+                                            {{ datos_equipo.dg }}
+
+                                        </td>
+
+                                    </tr>
+
+                                    {% endfor %}
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================= -->
+    <!-- MEJORES TERCEROS -->
+    <!-- ========================================= -->
+
+    <div class="card shadow-lg mb-5">
+
+        <div class="card-header bg-warning">
+
+            <h3 class="mb-0">
+
+                🥉 Mejores Terceros
+
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Posición</th>
+
+                            <th>Grupo</th>
+
+                            <th>Equipo</th>
+
+                            <th>Puntos</th>
+
+                            <th>DG</th>
+
+                            <th>GF</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for tercero in mejores_terceros[:8] %}
+
+                        <tr>
+
+                            <td>
+
+                                {{ loop.index }}
+
+                            </td>
+
+                            <td>
+
+                                {{ tercero.grupo }}
+
+                            </td>
+
+                            <td>
+
+                                {{ tercero.equipo }}
+
+                            </td>
+
+                            <td>
+
+                                {{ tercero.puntos }}
+
+                            </td>
+
+                            <td>
+
+                                {{ tercero.dg }}
+
+                            </td>
+
+                            <td>
+
+                                {{ tercero.gf }}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================================= -->
+    <!-- INSTANCIAS FINALES -->
+    <!-- ========================================= -->
+
+    <div class="card shadow-lg">
+
+        <div class="card-header bg-dark text-white">
+
+            <h3 class="mb-0">
+
+                🏆 Instancias Finales
+
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <!-- DIECISEISAVOS -->
+
+            <h4 class="text-primary mb-3">
+
+                Dieciseisavos
+
+            </h4>
+
+            <div class="row">
+
+                {% for i in range(73,89) %}
+
+                    {% if datos.get(i) %}
+
+                    <div class="col-md-3 mb-3">
+
+                        <div class="card border-primary">
+
+                            <div class="card-body text-center">
+
+                                <small>
+
+                                    Partido {{ i }}
+
+                                </small>
+
+                                <hr>
+
+                                <strong>
+
+                                    {{ datos[i].equipo_local }}
+
+                                </strong>
+
+                                <br>
+
+                                {{ datos[i].goles_local }}
+
+                                -
+
+                                {{ datos[i].goles_visitante }}
+
+                                <br>
+
+                                <strong>
+
+                                    {{ datos[i].equipo_visitante }}
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+            <hr>
+
+            <!-- OCTAVOS -->
+
+            <h4 class="text-success mb-3">
+
+                Octavos
+
+            </h4>
+
+            <div class="row">
+
+                {% for i in range(89,97) %}
+
+                    {% if datos.get(i) %}
+
+                    <div class="col-md-3 mb-3">
+
+                        <div class="card border-success">
+
+                            <div class="card-body text-center">
+
+                                <small>
+
+                                    Partido {{ i }}
+
+                                </small>
+
+                                <hr>
+
+                                <strong>
+
+                                    {{ datos[i].equipo_local }}
+
+                                </strong>
+
+                                <br>
+
+                                {{ datos[i].goles_local }}
+
+                                -
+
+                                {{ datos[i].goles_visitante }}
+
+                                <br>
+
+                                <strong>
+
+                                    {{ datos[i].equipo_visitante }}
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+            <hr>
+
+            <!-- CUARTOS -->
+
+            <h4 class="text-warning mb-3">
+
+                Cuartos de Final
+
+            </h4>
+
+            <div class="row">
+
+                {% for i in range(97,101) %}
+
+                    {% if datos.get(i) %}
+
+                    <div class="col-md-3 mb-3">
+
+                        <div class="card border-warning">
+
+                            <div class="card-body text-center">
+
+                                <small>
+
+                                    Partido {{ i }}
+
+                                </small>
+
+                                <hr>
+
+                                <strong>
+
+                                    {{ datos[i].equipo_local }}
+
+                                </strong>
+
+                                <br>
+
+                                {{ datos[i].goles_local }}
+
+                                -
+
+                                {{ datos[i].goles_visitante }}
+
+                                <br>
+
+                                <strong>
+
+                                    {{ datos[i].equipo_visitante }}
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+            <hr>
+
+            <!-- SEMIFINALES -->
+
+            <h4 class="text-danger mb-3">
+
+                Semifinales
+
+            </h4>
+
+            <div class="row">
+
+                {% for i in range(101,103) %}
+
+                    {% if datos.get(i) %}
+
+                    <div class="col-md-6 mb-3">
+
+                        <div class="card border-danger">
+
+                            <div class="card-body text-center">
+
+                                <small>
+
+                                    Partido {{ i }}
+
+                                </small>
+
+                                <hr>
+
+                                <strong>
+
+                                    {{ datos[i].equipo_local }}
+
+                                </strong>
+
+                                <br>
+
+                                {{ datos[i].goles_local }}
+
+                                -
+
+                                {{ datos[i].goles_visitante }}
+
+                                <br>
+
+                                <strong>
+
+                                    {{ datos[i].equipo_visitante }}
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+            <hr>
+
+            <!-- TERCER PUESTO -->
+
+            {% if datos.get(103) %}
+
+            <div class="card border-secondary mb-4">
+
+                <div class="card-header bg-secondary text-white">
+
+                    🥉 Tercer Puesto
+
+                </div>
+
+                <div class="card-body text-center">
+
+                    <strong>{{ datos[103].equipo_local }}</strong>
+
+                    {{ datos[103].goles_local }}
+
+                    -
+
+                    {{ datos[103].goles_visitante }}
+
+                    <strong>{{ datos[103].equipo_visitante }}</strong>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+            <!-- FINAL -->
+
+            {% if datos.get(104) %}
+
+            <div class="card border-warning shadow-lg">
+
+                <div class="card-header bg-warning">
+
+                    🏆 Final
+
+                </div>
+
+                <div class="card-body text-center">
+
+                    <h4>
+
+                        {{ datos[104].equipo_local }}
+
+                        {{ datos[104].goles_local }}
+
+                        -
+
+                        {{ datos[104].goles_visitante }}
+
+                        {{ datos[104].equipo_visitante }}
+
+                    </h4>
+
+                    <hr>
+
+                    <h2 class="text-success">
+
+                        🏆 Campeón
+
+                    </h2>
+
+                    <h1>
+
+                        {{ datos[104].ganador }}
+
+                    </h1>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

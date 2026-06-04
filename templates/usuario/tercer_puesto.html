@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    {% if partido.numero not in guardados %}
+
+    <div class="card shadow-lg">
+
+        <div class="card-header bg-secondary text-white">
+
+            <h3>
+
+                🥉 Partido por el Tercer Puesto
+
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST"
+                  action="{{ url_for('guardar_tercer_puesto') }}">
+
+                <input type="hidden"
+                       name="equipo_local"
+                       value="{{ partido.local }}">
+
+                <input type="hidden"
+                       name="equipo_visitante"
+                       value="{{ partido.visitante }}">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-4 text-center">
+
+                        <h4>{{ partido.local }}</h4>
+
+                    </div>
+
+                    <div class="col-md-1">
+
+                        <input type="number"
+                               name="goles_local"
+                               class="form-control"
+                               min="0"
+                               required>
+
+                    </div>
+
+                    <div class="col-md-2 text-center">
+
+                        VS
+
+                    </div>
+
+                    <div class="col-md-1">
+
+                        <input type="number"
+                               name="goles_visitante"
+                               class="form-control"
+                               min="0"
+                               required>
+
+                    </div>
+
+                    <div class="col-md-4 text-center">
+
+                        <h4>{{ partido.visitante }}</h4>
+
+                    </div>
+
+                </div>
+
+                <div class="text-center mt-4">
+
+                    <button class="btn btn-success">
+
+                        Guardar
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+    {% endif %}
+
+    
+            {% if guardados|length == 1 %}
+            <div class="text-center mt-4">
+
+                <a href="{{ url_for('final_mundial') }}" class="btn btn-primary btn-lg">
+
+                    Ver Partido por el Final →
+
+                </a>
+                
+            </div>
+
+            {% endif %}
+
+</div>
+
+{% endblock %}

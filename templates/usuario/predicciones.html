@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+
+    <!-- TITULO -->
+    <div class="text-center mb-5">
+
+        <h1 class="fw-bold text-primary">
+
+            <i class="bi bi-globe-americas"></i>
+
+            Predicciones Mundial 2026
+
+        </h1>
+
+        <p class="text-muted fs-5">
+
+            Completa tus resultados por grupos
+
+        </p>
+
+    </div>
+
+    <!-- ACORDEON -->
+    <div class="accordion"
+         id="accordionGrupos">
+
+        {% for grupo, partidos_grupo in grupos.items() %}
+
+            {% set namespace = namespace(mostrar=false) %}
+
+            <!-- VALIDAR SI HAY PARTIDOS SIN PREDICCION -->
+            {% for partido in partidos_grupo %}
+
+                {% if partido.id not in predicciones_ids %}
+
+                    {% set namespace.mostrar = true %}
+
+                {% endif %}
+
+            {% endfor %}
+
+            <!-- MOSTRAR SOLO SI HAY PENDIENTES -->
+            {% if namespace.mostrar %}
+
+            <div class="accordion-item border-0 shadow-lg mb-4 rounded-4 overflow-hidden">
+
+                <!-- HEADER -->
+                <h2 class="accordion-header"
+                    id="heading{{ grupo }}">
+
+                    <button class="accordion-button fw-bold fs-5"
+
+                            type="button"
+
+                            data-bs-toggle="collapse"
+
+                            data-bs-target="#collapse{{ grupo }}"
+
+                            aria-expanded="true">
+
+                        <i class="bi bi-flag-fill text-primary me-3"></i>
+
+                        Grupo {{ grupo }}
+
+                    </button>
+
+                </h2>
+
+                <!-- BODY -->
+                <div id="collapse{{ grupo }}"
+                     class="accordion-collapse collapse show"
+                     data-bs-parent="#accordionGrupos">
+
+                    <div class="accordion-body bg-light p-4">
+
+                        {% for partido in partidos_grupo %}
+
+                            {% if partido.id not in predicciones_ids %}
+
+                            <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+                                <div class="card-body p-4">
+
+                                    <!-- FECHA -->
+                                    <div class="text-end mb-3">
+
+                                        <span class="badge bg-secondary">
+
+                                            <i class="bi bi-calendar-event"></i>
+
+                                            {{ partido.fecha.strftime('%d/%m/%Y %H:%M') }}
+
+                                        </span>
+
+                                    </div>
+
+                                    <!-- EQUIPOS -->
+                                    <div class="row align-items-center text-center mb-4">
+
+                                        <div class="col-md-5">
+
+                                            <div class="p-3 rounded-4 bg-white shadow-sm">
+
+                                                <h4 class="fw-bold mb-0">
+
+                                                    {{ partido.equipo_local }}
+
+                                                </h4>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-md-2">
+
+                                            <div class="fw-bold fs-3 text-primary">
+
+                                                VS
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-md-5">
+
+                                            <div class="p-3 rounded-4 bg-white shadow-sm">
+
+                                                <h4 class="fw-bold mb-0">
+
+                                                    {{ partido.equipo_visitante }}
+
+                                                </h4>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- FORMULARIO -->
+                                    <form method="POST"
+                                          action="{{ url_for('guardar_prediccion') }}">
+
+                                        <input type="hidden"
+                                               name="partido_id"
+                                               value="{{ partido.id }}">
+
+                                        <div class="row justify-content-center align-items-center">
+
+                                            <!-- GOLES LOCAL -->
+                                            <div class="col-md-3 mb-3">
+
+                                                <label class="form-label fw-semibold">
+
+                                                    {{ partido.equipo_local }}
+
+                                                </label>
+
+                                                <input type="number"
+                                                       name="goles_local"
+                                                       class="form-control form-control-lg text-center rounded-4"
+                                                       min="0"
+                                                       required>
+
+                                            </div>
+
+                                            <!-- SEPARADOR -->
+                                            <div class="col-md-1 text-center mb-3">
+
+                                                <span class="fw-bold fs-2 text-secondary">
+
+                                                    -
+
+                                                </span>
+
+                                            </div>
+
+                                            <!-- GOLES VISITANTE -->
+                                            <div class="col-md-3 mb-3">
+
+                                                <label class="form-label fw-semibold">
+
+                                                    {{ partido.equipo_visitante }}
+
+                                                </label>
+
+                                                <input type="number"
+                                                       name="goles_visitante"
+                                                       class="form-control form-control-lg text-center rounded-4"
+                                                       min="0"
+                                                       required>
+
+                                            </div>
+
+                                            <!-- BOTON -->
+                                            <div class="col-md-3 mb-3">
+
+                                                <label class="form-label d-block invisible">
+
+                                                    Guardar
+
+                                                </label>
+
+                                                <button type="submit"
+                                                        class="btn btn-success btn-lg w-100 rounded-4 shadow-sm">
+
+                                                    <i class="bi bi-save-fill"></i>
+
+                                                    Guardar
+
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+    
+
+    <div class="text-center mt-4">
+
+    <a href="{{ url_for('clasificacion_16') }}"
+       class="btn btn-primary btn-lg shadow-lg px-5">
+
+        <i class="bi bi-arrow-right-circle-fill"></i>
+
+        Ver Clasificados a Dieciseisavos
+
+    </a>
+
+</div>
+
+
+
+</div>
+
+{% endblock %}

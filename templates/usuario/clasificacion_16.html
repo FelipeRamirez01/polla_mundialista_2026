@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+
+    <!-- TITULO -->
+    <div class="text-center mb-5">
+
+        <h1 class="fw-bold text-primary">
+
+            <i class="bi bi-trophy-fill"></i>
+
+            Clasificación Mundial 2026
+
+        </h1>
+
+        <p class="text-muted">
+
+            Así quedarían los grupos según tus predicciones
+
+        </p>
+
+    </div>
+
+    <a href="{{ url_for('mejores_terceros') }}"
+   class="btn btn-success btn-lg">
+
+    <i class="bi bi-award-fill"></i>
+
+    Ver Mejores Terceros
+
+</a>
+
+    <a href="{{ url_for('dieciseisavos') }}"
+   class="btn btn-success btn-lg">
+
+    <i class="bi bi-award-fill"></i>
+
+    Cruces de Dieciseisavos
+
+</a>
+
+    <!-- TABLAS -->
+    <div class="row">
+
+        {% for grupo, tabla in tablas.items() %}
+
+        <div class="col-md-6 mb-4">
+
+            <div class="card shadow border-0 rounded-4">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h4 class="mb-0">
+
+                        Grupo {{ grupo }}
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle text-center">
+
+                            <thead class="table-light">
+
+                                <tr>
+                                    <th>#</th>
+                                    <th>Equipo</th>
+                                    <th>Pts</th>
+                                    <th>DG</th>
+                                    <th>GF</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for equipo, datos in tabla %}
+
+                                <tr {% if loop.index <= 2 %}class="table-success"{% endif %}>
+
+                                    <td>
+
+                                        {{ loop.index }}
+
+                                    </td>
+
+                                    <td class="text-start fw-bold">
+
+                                        {{ equipo }}
+
+                                    </td>
+
+                                    <td>
+
+                                        {{ datos.puntos }}
+
+                                    </td>
+
+                                    <td>
+
+                                        {{ datos.dg }}
+
+                                    </td>
+
+                                    <td>
+
+                                        {{ datos.gf }}
+
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <!-- DIECISEISAVOS -->
+    <div class="mt-5">
+
+        <div class="text-center mb-4">
+
+            <h2 class="fw-bold text-success">
+
+                <i class="bi bi-diagram-3-fill"></i>
+
+                Mejores Terceros
+
+            </h2>
+
+        </div>
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle text-center">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>#</th>
+                            <th>Grupo</th>
+                            <th>Equipo</th>
+                            <th>Puntos</th>
+                            <th>DG</th>
+                            <th>GF</th>
+                            <th>Estado</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for equipo in terceros %}
+
+                        <tr>
+
+                            <td>
+
+                                {{ loop.index }}
+
+                            </td>
+
+                            <td>
+
+                                {{ equipo.grupo }}
+
+                            </td>
+
+                            <td class="fw-bold">
+
+                                {{ equipo.equipo }}
+
+                            </td>
+
+                            <td>
+
+                                {{ equipo.puntos }}
+
+                            </td>
+
+                            <td>
+
+                                {{ equipo.dg }}
+
+                            </td>
+
+                            <td>
+
+                                {{ equipo.gf }}
+
+                            </td>
+
+                            <td>
+
+                                {% if loop.index <= 8 %}
+
+                                    <span class="badge bg-success">
+
+                                        Clasificado
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-danger">
+
+                                        Eliminado
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

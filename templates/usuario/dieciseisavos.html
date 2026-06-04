@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h1 class="text-center text-primary mb-5">
+
+        Dieciseisavos de Final
+
+    </h1>
+
+    <div class="row">
+
+        {% for partido in cruces %}
+
+        {% if partido.numero not in guardados %}
+
+
+        <div class="col-md-6 mb-4">
+
+            <div class="card shadow border-0">
+
+                <div class="card-header bg-primary text-white">
+
+                    Partido {{ partido.numero }}
+
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST" action="{{ url_for('guardar_dieciseisavos') }}">
+
+                        <input type="hidden" name="numero_partido" value="{{ partido.numero }}">
+
+                        <input type="hidden" name="equipo_local" value="{{ partido.local }}">
+
+                        <input type="hidden" name="equipo_visitante" value="{{ partido.visitante }}">
+
+                        <div class="row align-items-center">
+
+                            <div class="col-5 text-center">
+
+                                <strong>
+
+                                    {{ partido.local }}
+
+                                </strong>
+
+                            </div>
+
+                            <div class="col-2 text-center">
+
+                                VS
+
+                            </div>
+
+                            <div class="col-5 text-center">
+
+                                <strong>
+
+                                    {{ partido.visitante }}
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                        <hr>
+
+                        <div class="row">
+
+                            <div class="col">
+
+                                <input type="number" name="goles_local" class="form-control" min="0" required>
+
+                            </div>
+
+                            <div class="col">
+
+                                <input type="number" name="goles_visitante" class="form-control" min="0" required>
+
+                            </div>
+
+                        </div>
+
+                        <button class="btn btn-success mt-3 w-100">
+
+                            Guardar Resultado
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+    {% if guardados|length == 16 %}
+    <div class="text-center mt-4">
+
+        <a href="{{ url_for('octavos') }}" class="btn btn-primary btn-lg">
+
+            Continuar a Octavos →
+
+        </a>
+
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

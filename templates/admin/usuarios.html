@@ -1,0 +1,78 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between mb-3">
+
+        <h2>Administración de Usuarios</h2>
+
+        <a href="/admin/usuarios/crear" class="btn btn-primary">
+            Nuevo Usuario
+        </a>
+
+    </div>
+
+    <table class="table table-bordered table-hover">
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Grupo</th>
+                <th>Acciones</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for usuario in usuarios %}
+
+            <tr>
+
+                <td>{{ usuario.id }}</td>
+
+                <td>{{ usuario.nombre }}</td>
+
+                <td>{{ usuario.correo }}</td>
+
+                <td>{{ usuario.rol.nombre }}</td>
+
+                <td>
+                    {% if usuario.grupo %}
+                        {{ usuario.grupo.nombre }}
+                    {% endif %}
+                </td>
+
+                <td>
+
+                    <a href="/admin/usuarios/editar/{{ usuario.id }}"
+                       class="btn btn-warning btn-sm">
+                        Editar
+                    </a>
+
+                    <a href="/admin/usuarios/eliminar/{{ usuario.id }}"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('¿Eliminar usuario?')">
+
+                        Eliminar
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

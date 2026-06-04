@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+
+
+
+
+    <!-- TABLA -->
+    <div class="card shadow-lg border-0 rounded-4">
+
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">
+                Tabla de Posiciones - Grupo {{ grupo }}
+            </h4>
+        </div>
+        <div class="card-body">
+
+            {% if tabla %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle text-center">
+
+                    <thead class="table-dark">
+
+                        <tr>
+                            <th width="10%">#</th>
+                            <th width="60%">Usuario</th>
+                            <th width="30%">Puntos</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for usuario in tabla %}
+
+                        <tr {% if usuario.id == current_user.id %}class="table-primary fw-bold"{% endif %}>
+
+                            <!-- POSICION -->
+                            <td>
+
+                                {% if loop.index == 1 %}
+
+                                <span class="badge bg-warning text-dark fs-6">
+                                    🥇 1
+                                </span>
+
+                                {% elif loop.index == 2 %}
+
+                                <span class="badge bg-secondary fs-6">
+                                    🥈 2
+                                </span>
+
+                                {% elif loop.index == 3 %}
+
+                                <span class="badge bg-danger fs-6">
+                                    🥉 3
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-primary fs-6">
+                                    {{ loop.index }}
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <!-- USUARIO -->
+
+                            
+                            <td class="text-start fw-semibold">
+
+                                <i class="bi bi-person-circle text-primary"></i>
+
+                                {{ usuario.nombre }}
+
+                            </td>
+
+                            <!-- PUNTOS -->
+                            <td>
+
+                                <span class="badge bg-success fs-6 px-3 py-2">
+
+                                    <i class="bi bi-star-fill"></i>
+
+                                    {{ usuario.total_puntos }} pts
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="alert alert-warning text-center">
+
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                No hay datos disponibles en la tabla de posiciones.
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

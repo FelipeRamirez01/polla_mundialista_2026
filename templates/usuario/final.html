@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="card shadow-lg border-warning">
+
+        <div class="card-header bg-warning">
+
+            <h2>
+
+                🏆 Gran Final
+
+            </h2>
+
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST"
+                  action="{{ url_for('guardar_final') }}">
+
+                <input type="hidden"
+                       name="equipo_local"
+                       value="{{ final.local }}">
+
+                <input type="hidden"
+                       name="equipo_visitante"
+                       value="{{ final.visitante }}">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-4 text-center">
+
+                        <h3>{{ final.local }}</h3>
+
+                    </div>
+
+                    <div class="col-md-1">
+
+                        <input type="number"
+                               name="goles_local"
+                               class="form-control"
+                               required>
+
+                    </div>
+
+                    <div class="col-md-2 text-center">
+
+                        <strong>VS</strong>
+
+                    </div>
+
+                    <div class="col-md-1">
+
+                        <input type="number"
+                               name="goles_visitante"
+                               class="form-control"
+                               required>
+
+                    </div>
+
+                    <div class="col-md-4 text-center">
+
+                        <h3>{{ final.visitante }}</h3>
+
+                    </div>
+
+                </div>
+
+                <div class="text-center mt-4">
+
+                    <button class="btn btn-success btn-lg">
+
+                        Guardar Resultado
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

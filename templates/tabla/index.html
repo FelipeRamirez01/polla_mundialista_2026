@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Tabla de Posiciones</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div class="container mt-5">
+
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">
+                Tabla de Posiciones - Grupo {{ grupo }}
+            </h4>
+        </div>
+        <table class="table table-bordered table-hover mt-4">
+
+            <thead>
+
+                <tr>
+                    <th>Posición</th>
+                    <th>Usuario</th>
+                    <th>Puntos</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+                {% for usuario in tabla %}
+                <tr {% if usuario.id==current_user.id %}class="table-primary fw-bold" {% endif %}>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ usuario.nombre }}</td>
+                    <td>{{ usuario.total_puntos }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+
+</body>
+
+</html>
