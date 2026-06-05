@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'clave_super_segura'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    'mysql+pymysql://root:root@localhost/polla_mundial'
+    'mysql+pymysql://root:utWabMlSivSEEkcYhNNfjtCTdDiXyVNN@acela.proxy.rlwy.net:25475/railway'
 )
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
