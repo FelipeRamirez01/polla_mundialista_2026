@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'clave_super_segura'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    'mysql://root:utWabMlSivSEEkcYhNNfjtCTdDiXyVNN@acela.proxy.rlwy.net:25475/railway'
+    'mysql+pymysql://root:utWabMlSivSEEkcYhNNfjtCTdDiXyVNN@acela.proxy.rlwy.net:25475/railway'
 )
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -58,7 +58,7 @@ from controllers.usuario_controller import *
 
 from controllers.tabla_controller import *
 from controllers.grupo_controller import *
-from controllers.prediccion_controller import *
+from controllers.usuario_controller import *
 
 #app.register_blueprint(tabla_bp)
 
