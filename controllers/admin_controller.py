@@ -9,6 +9,7 @@ from models.rol import Rol
 from models.grupo import Grupo
 from models.prediccion import Prediccion
 from models.partido import Partido
+from models.partido_eliminacion import PartidoEliminacion
 
 
 # VALIDAR ADMIN
@@ -192,7 +193,11 @@ def calcular_puntos(prediccion, partido):
 
 def actualizar_puntos_partido(partido_id):
 
-    partido = Partido.query.get(partido_id)
+    partido = Partido.query.get_or_404(partido_id)
+
+    # ==========================================
+    # FASE DE GRUPOS
+    # ==========================================
 
     predicciones = Prediccion.query.filter_by(
         partido_id=partido_id
@@ -204,6 +209,53 @@ def actualizar_puntos_partido(partido_id):
             prediccion,
             partido
         )
+
+    # ==========================================
+    # FASES ELIMINATORIAS
+    # ==========================================
+
+    if partido.numero_partido:
+
+        ganador_real = 0
+
+        if partido.goles_local > partido.goles_visitante:
+            ganador_real = 1
+
+        elif partido.goles_visitante > partido.goles_local:
+            ganador_real = 2
+
+        predicciones_eliminacion = PartidoEliminacion.query.filter_by(
+            numero_partido=partido.numero_partido
+        ).all()
+
+        for pred in predicciones_eliminacion:
+
+            ganador_predicho = 0
+
+            if pred.goles_local > pred.goles_visitante:
+                ganador_predicho = 1
+
+            elif pred.goles_visitante > pred.goles_local:
+                ganador_predicho = 2
+
+            # 3 puntos marcador exacto
+            if (
+                pred.goles_local == partido.goles_local
+                and
+                pred.goles_visitante == partido.goles_visitante
+            ):
+
+                pred.puntos = 3
+
+            # 1 punto ganador acertado
+            elif ganador_predicho == ganador_real:
+
+                pred.puntos = 1
+
+            # 0 puntos
+            else:
+
+                pred.puntos = 0
 
     db.session.commit()
 

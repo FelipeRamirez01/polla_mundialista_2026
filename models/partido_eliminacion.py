@@ -41,6 +41,8 @@ class PartidoEliminacion(db.Model):
 
     partido_origen_visitante = db.Column(db.Integer)
 
+    es_oficial = db.Column(db.Boolean,default=False)
+
     usuario = db.relationship(
         'Usuario',
         backref='partidos_eliminacion'
