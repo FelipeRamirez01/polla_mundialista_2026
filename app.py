@@ -8,15 +8,10 @@ app = Flask(__name__)
 # CONFIGURACIÓN
 # =========================
 
+app.config['SECRET_KEY'] = 'clave_super_segura'
 
-import os
-
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    'DATABASE_URL'
-)
-
-app.config['SECRET_KEY'] = os.getenv(
-    'SECRET_KEY'
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    'mysql://root:utWabMlSivSEEkcYhNNfjtCTdDiXyVNN@acela.proxy.rlwy.net:25475/railway'
 )
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
