@@ -69,7 +69,6 @@ from controllers.usuario_controller import *
 # IMPORTAR SCHEDULER
 # =========================
 
-from scheduler import scheduler
 
 
 # =========================
