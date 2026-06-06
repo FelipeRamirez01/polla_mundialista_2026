@@ -12,6 +12,10 @@ from models.grupo import Grupo
 def home():
     return 'Funcionando'
 
+@app.route('/test')
+def test():
+    return 'OK'
+
 
 
 @app.route('/login', methods=['GET', 'POST'])

@@ -29,6 +29,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
+with app.app_context():
+    try:
+        db.engine.connect()
+        print("MYSQL OK")
+    except Exception as e:
+        print("ERROR MYSQL:", e)
+
 login_manager.init_app(app)
 
 #login_manager.login_view = 'login'
