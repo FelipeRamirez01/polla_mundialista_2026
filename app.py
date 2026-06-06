@@ -77,8 +77,15 @@ from controllers.usuario_controller import *
 
 
 @app.route('/test_prueba')
-def test_prueba():
+def test_prueba1():
     return "Aplicación funcionando"
+
+@app.errorhandler(Exception)
+def error_general(error):
+    return f"ERROR: {str(error)}", 500
+
+
+print(app.url_map)
 
 
 # =========================
