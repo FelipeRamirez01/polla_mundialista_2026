@@ -27,7 +27,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # INICIALIZAR EXTENSIONS
 # =========================
 
+print("INICIANDO APP")
+
 db.init_app(app)
+
+print("DB INICIALIZADA")
 
 with app.app_context():
     try:
@@ -65,24 +69,15 @@ def load_user(user_id):
 # IMPORTAR CONTROLADORES
 # =========================
 
-from controllers.auth_controller import *
-from controllers.admin_controller import *
-from controllers.usuario_controller import *
+#from controllers.auth_controller import *
+#from controllers.admin_controller import *
+#from controllers.usuario_controller import *
 
-from controllers.tabla_controller import *
-from controllers.grupo_controller import *
-from controllers.usuario_controller import *
+#from controllers.tabla_controller import *
+#from controllers.grupo_controller import *
+#from controllers.usuario_controller import *
 
 #app.register_blueprint(tabla_bp)
-
-
-@app.route('/test_prueba')
-def test_prueba1():
-    return "Aplicación funcionando"
-
-@app.errorhandler(Exception)
-def error_general(error):
-    return f"ERROR: {str(error)}", 500
 
 @app.route("/")
 def home():
@@ -96,13 +91,15 @@ def home():
 
 @app.route('/health')
 def health():
-
+    print("ENTRO A HEALTH")
     return 'OK', 200
 
 print("APP CARGADA COMPLETAMENTE")
 # =========================
 # EJECUTAR APP
 # =========================
+
+print("FIN APP")
 
 if __name__ == '__main__':
 
