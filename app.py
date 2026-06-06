@@ -64,7 +64,7 @@ from controllers.usuario_controller import *
 
 
 @app.route('/test_prueba')
-def test():
+def test_prueba():
     return "Aplicación funcionando"
 
 
