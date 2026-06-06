@@ -85,9 +85,14 @@ def error_general(error):
     return f"ERROR: {str(error)}", 500
 
 
-print(app.url_map)
+#print(app.url_map)
 
 
+@app.route('/health')
+def health():
+    return 'OK', 200
+
+print("APP CARGADA COMPLETAMENTE")
 # =========================
 # EJECUTAR APP
 # =========================
