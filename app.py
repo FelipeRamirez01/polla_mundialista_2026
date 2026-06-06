@@ -68,15 +68,16 @@ def load_user(user_id):
 # =========================
 # IMPORTAR CONTROLADORES
 # =========================
+print("ANTES CONTROLADORES")
 
-#from controllers.auth_controller import *
-#from controllers.admin_controller import *
-#from controllers.usuario_controller import *
+from controllers.auth_controller import *
+from controllers.admin_controller import *
+from controllers.usuario_controller import *
 
-#from controllers.tabla_controller import *
-#from controllers.grupo_controller import *
-#from controllers.usuario_controller import *
-
+from controllers.tabla_controller import *
+from controllers.grupo_controller import *
+from controllers.usuario_controller import *
+print("DESPUES CONTROLADORES")
 #app.register_blueprint(tabla_bp)
 
 @app.route("/")
