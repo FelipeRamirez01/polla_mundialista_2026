@@ -63,12 +63,9 @@ from controllers.usuario_controller import *
 #app.register_blueprint(tabla_bp)
 
 
-
-
-# =========================
-# IMPORTAR SCHEDULER
-# =========================
-
+@app.route('/test_prueba')
+def test():
+    return "Aplicación funcionando"
 
 
 # =========================
