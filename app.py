@@ -27,18 +27,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # INICIALIZAR EXTENSIONS
 # =========================
 
-print("INICIANDO APP")
 
 db.init_app(app)
 
-print("DB INICIALIZADA")
 
-with app.app_context():
-    try:
-        db.engine.connect()
-        print("MYSQL OK")
-    except Exception as e:
-        print("ERROR MYSQL:", e)
 
 login_manager.init_app(app)
 
@@ -68,7 +60,6 @@ def load_user(user_id):
 # =========================
 # IMPORTAR CONTROLADORES
 # =========================
-print("ANTES CONTROLADORES")
 
 from controllers.auth_controller import *
 from controllers.admin_controller import *
@@ -77,28 +68,10 @@ from controllers.usuario_controller import *
 from controllers.tabla_controller import *
 from controllers.grupo_controller import *
 from controllers.usuario_controller import *
-print("DESPUES CONTROLADORES")
 #app.register_blueprint(tabla_bp)
 
-@app.route("/")
-def home():
-
-    print("ENTRO A HOME")
-
-    return "HOME OK"
-
-#print(app.url_map)
 
 
-@app.route('/health')
-def health():
-    return "OK", 200
-
-@app.before_request
-def debug_request():
-    print("PETICION RECIBIDA")
-
-print("APP CARGADA COMPLETAMENTE")
 # =========================
 # EJECUTAR APP
 # =========================
@@ -109,7 +82,6 @@ def capturar_error(error):
     print(traceback.format_exc())
     return str(error), 500
 
-print("FIN APP")
 
 if __name__ == '__main__':
 
