@@ -34,7 +34,7 @@ db.init_app(app)
 
 login_manager.init_app(app)
 
-#login_manager.login_view = 'login'
+login_manager.login_view = 'login'
 
 
 # =========================
@@ -61,13 +61,16 @@ def load_user(user_id):
 # IMPORTAR CONTROLADORES
 # =========================
 
-from controllers.auth_controller import *
+
 from controllers.admin_controller import *
+from controllers.auth_controller import *
+from controllers.grupo_controller import *
+from controllers.partido_controller import *
+from controllers.prediccion_controller import *
+from controllers.usuario_controller import *
+from controllers.tabla_controller import *
 from controllers.usuario_controller import *
 
-from controllers.tabla_controller import *
-from controllers.grupo_controller import *
-from controllers.usuario_controller import *
 #app.register_blueprint(tabla_bp)
 
 
