@@ -93,7 +93,11 @@ def home():
 @app.route('/health')
 def health():
     print("ENTRO A HEALTH")
-    return 'OK', 200
+    return "HEALTH OK"
+
+@app.before_request
+def debug_request():
+    print("PETICION RECIBIDA")
 
 print("APP CARGADA COMPLETAMENTE")
 # =========================
