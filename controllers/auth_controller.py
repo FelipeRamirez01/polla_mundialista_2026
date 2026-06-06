@@ -8,9 +8,9 @@ from models.rol import Rol
 from models.grupo import Grupo
 
 # LOGIN
-@app.route('/')
-def home():
-    return 'Funcionando'
+#@app.route('/')
+#def home():
+ #   return 'Funcionando'
 
 @app.route('/test')
 def test():
