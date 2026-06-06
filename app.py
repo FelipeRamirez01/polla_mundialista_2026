@@ -84,12 +84,19 @@ def test_prueba1():
 def error_general(error):
     return f"ERROR: {str(error)}", 500
 
+@app.route("/")
+def home():
+
+    print("ENTRO A HOME")
+
+    return "HOME OK"
 
 #print(app.url_map)
 
 
 @app.route('/health')
 def health():
+
     return 'OK', 200
 
 print("APP CARGADA COMPLETAMENTE")
