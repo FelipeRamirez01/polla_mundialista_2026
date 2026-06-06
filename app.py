@@ -104,6 +104,12 @@ print("APP CARGADA COMPLETAMENTE")
 # EJECUTAR APP
 # =========================
 
+@app.errorhandler(Exception)
+def capturar_error(error):
+    import traceback
+    print(traceback.format_exc())
+    return str(error), 500
+
 print("FIN APP")
 
 if __name__ == '__main__':

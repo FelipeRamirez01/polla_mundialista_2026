@@ -325,7 +325,7 @@ def admin_tabla_posiciones():
 
     if current_user.rol.nombre != 'Administrador':
         flash('No tiene permisos para acceder.')
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('login'))
 
     grupo_id = request.args.get('grupo_id', type=int)
 
