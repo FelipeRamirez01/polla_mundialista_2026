@@ -8,8 +8,9 @@ from models.rol import Rol
 from models.grupo import Grupo
 
 # LOGIN
+
+#@app.route('/login', methods=['GET', 'POST'])
 @app.route('/', methods=['GET', 'POST'])
-@app.route('/login', methods=['GET', 'POST'])
 def login():
 
     if request.method == 'POST':
