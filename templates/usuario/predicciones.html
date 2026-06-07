@@ -17,37 +17,30 @@
 
         <p class="text-muted fs-5">
 
-            Completa tus resultados por grupos
+            Completa todos los resultados de cada grupo y guarda con un solo clic.
 
         </p>
 
     </div>
 
     <!-- ACORDEON -->
-    <div class="accordion"
-         id="accordionGrupos">
+    <div class="accordion" id="accordionGrupos">
 
         {% for grupo, partidos_grupo in grupos.items() %}
 
-            {% set namespace = namespace(mostrar=false) %}
+            {% set ns = namespace(mostrar=false) %}
 
-            <!-- VALIDAR SI HAY PARTIDOS SIN PREDICCION -->
             {% for partido in partidos_grupo %}
-
                 {% if partido.id not in predicciones_ids %}
-
-                    {% set namespace.mostrar = true %}
-
+                    {% set ns.mostrar = true %}
                 {% endif %}
-
             {% endfor %}
 
-            <!-- MOSTRAR SOLO SI HAY PENDIENTES -->
-            {% if namespace.mostrar %}
+            {% if ns.mostrar %}
 
             <div class="accordion-item border-0 shadow-lg mb-4 rounded-4 overflow-hidden">
 
-                <!-- HEADER -->
+                <!-- CABECERA -->
                 <h2 class="accordion-header"
                     id="heading{{ grupo }}">
 
@@ -69,88 +62,87 @@
 
                 </h2>
 
-                <!-- BODY -->
+                <!-- CONTENIDO -->
                 <div id="collapse{{ grupo }}"
                      class="accordion-collapse collapse show"
                      data-bs-parent="#accordionGrupos">
 
                     <div class="accordion-body bg-light p-4">
 
-                        {% for partido in partidos_grupo %}
+                        <form method="POST"
+                              action="{{ url_for('guardar_predicciones_grupo') }}">
 
-                            {% if partido.id not in predicciones_ids %}
+                            <input type="hidden"
+                                   name="grupo"
+                                   value="{{ grupo }}">
 
-                            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                            {% for partido in partidos_grupo %}
 
-                                <div class="card-body p-4">
+                                {% if partido.id not in predicciones_ids %}
 
-                                    <!-- FECHA -->
-                                    <div class="text-end mb-3">
+                                <div class="card border-0 shadow-sm rounded-4 mb-4">
 
-                                        <span class="badge bg-secondary">
+                                    <div class="card-body p-4">
 
-                                            <i class="bi bi-calendar-event"></i>
+                                        <!-- FECHA -->
+                                        <div class="text-end mb-3">
 
-                                            {{ partido.fecha.strftime('%d/%m/%Y %H:%M') }}
+                                            <span class="badge bg-secondary">
 
-                                        </span>
+                                                <i class="bi bi-calendar-event"></i>
 
-                                    </div>
+                                                {{ partido.fecha.strftime('%d/%m/%Y %H:%M') }}
 
-                                    <!-- EQUIPOS -->
-                                    <div class="row align-items-center text-center mb-4">
+                                            </span>
 
-                                        <div class="col-md-5">
+                                        </div>
 
-                                            <div class="p-3 rounded-4 bg-white shadow-sm">
+                                        <!-- EQUIPOS -->
+                                        <div class="row align-items-center text-center mb-4">
 
-                                                <h4 class="fw-bold mb-0">
+                                            <div class="col-md-5">
 
-                                                    {{ partido.equipo_local }}
+                                                <div class="p-3 rounded-4 bg-white shadow-sm">
 
-                                                </h4>
+                                                    <h4 class="fw-bold mb-0">
+
+                                                        {{ partido.equipo_local }}
+
+                                                    </h4>
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col-md-2">
+
+                                                <div class="fw-bold fs-2 text-primary">
+
+                                                    VS
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="col-md-5">
+
+                                                <div class="p-3 rounded-4 bg-white shadow-sm">
+
+                                                    <h4 class="fw-bold mb-0">
+
+                                                        {{ partido.equipo_visitante }}
+
+                                                    </h4>
+
+                                                </div>
 
                                             </div>
 
                                         </div>
 
-                                        <div class="col-md-2">
-
-                                            <div class="fw-bold fs-3 text-primary">
-
-                                                VS
-
-                                            </div>
-
-                                        </div>
-
-                                        <div class="col-md-5">
-
-                                            <div class="p-3 rounded-4 bg-white shadow-sm">
-
-                                                <h4 class="fw-bold mb-0">
-
-                                                    {{ partido.equipo_visitante }}
-
-                                                </h4>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                    <!-- FORMULARIO -->
-                                    <form method="POST"
-                                          action="{{ url_for('guardar_prediccion') }}">
-
-                                        <input type="hidden"
-                                               name="partido_id"
-                                               value="{{ partido.id }}">
-
+                                        <!-- MARCADOR -->
                                         <div class="row justify-content-center align-items-center">
 
-                                            <!-- GOLES LOCAL -->
                                             <div class="col-md-3 mb-3">
 
                                                 <label class="form-label fw-semibold">
@@ -160,14 +152,17 @@
                                                 </label>
 
                                                 <input type="number"
-                                                       name="goles_local"
-                                                       class="form-control form-control-lg text-center rounded-4"
+
                                                        min="0"
-                                                       required>
+
+                                                       required
+
+                                                       class="form-control form-control-lg text-center rounded-4"
+
+                                                       name="goles_local_{{ partido.id }}">
 
                                             </div>
 
-                                            <!-- SEPARADOR -->
                                             <div class="col-md-1 text-center mb-3">
 
                                                 <span class="fw-bold fs-2 text-secondary">
@@ -178,7 +173,6 @@
 
                                             </div>
 
-                                            <!-- GOLES VISITANTE -->
                                             <div class="col-md-3 mb-3">
 
                                                 <label class="form-label fw-semibold">
@@ -188,44 +182,41 @@
                                                 </label>
 
                                                 <input type="number"
-                                                       name="goles_visitante"
-                                                       class="form-control form-control-lg text-center rounded-4"
+
                                                        min="0"
-                                                       required>
 
-                                            </div>
+                                                       required
 
-                                            <!-- BOTON -->
-                                            <div class="col-md-3 mb-3">
+                                                       class="form-control form-control-lg text-center rounded-4"
 
-                                                <label class="form-label d-block invisible">
-
-                                                    Guardar
-
-                                                </label>
-
-                                                <button type="submit"
-                                                        class="btn btn-success btn-lg w-100 rounded-4 shadow-sm">
-
-                                                    <i class="bi bi-save-fill"></i>
-
-                                                    Guardar
-
-                                                </button>
+                                                       name="goles_visitante_{{ partido.id }}">
 
                                             </div>
 
                                         </div>
 
-                                    </form>
+                                    </div>
 
                                 </div>
 
+                                {% endif %}
+
+                            {% endfor %}
+
+                            <div class="text-center mt-4">
+
+                                <button type="submit"
+                                        class="btn btn-success btn-lg px-5 rounded-4 shadow">
+
+                                    <i class="bi bi-save-fill"></i>
+
+                                    Guardar Grupo {{ grupo }}
+
+                                </button>
+
                             </div>
 
-                            {% endif %}
-
-                        {% endfor %}
+                        </form>
 
                     </div>
 
@@ -239,22 +230,42 @@
 
     </div>
 
-    
+    <!-- TODOS LOS GRUPOS COMPLETOS -->
+
+    {% if grupos_completos %}
+
+    <div class="alert alert-success text-center shadow-lg mt-5">
+
+        <h4>
+
+            <i class="bi bi-check-circle-fill"></i>
+
+            Has completado todas tus predicciones de la fase de grupos
+
+        </h4>
+
+        <p class="mb-0">
+
+            Ya puedes continuar con las fases eliminatorias.
+
+        </p>
+
+    </div>
 
     <div class="text-center mt-4">
 
-    <a href="{{ url_for('clasificacion_16') }}"
-       class="btn btn-primary btn-lg shadow-lg px-5">
+        <a href="{{ url_for('clasificacion_16') }}"
+           class="btn btn-primary btn-lg shadow-lg px-5">
 
-        <i class="bi bi-arrow-right-circle-fill"></i>
+            <i class="bi bi-arrow-right-circle-fill"></i>
 
-        Ver Clasificados a Dieciseisavos
+            Ver Clasificados a Dieciseisavos
 
-    </a>
+        </a>
 
-</div>
+    </div>
 
-
+    {% endif %}
 
 </div>
 

@@ -107,6 +107,76 @@ def guardar_prediccion():
 
     return redirect(url_for('predicciones'))
 
+@app.route('/usuario/predicciones/guardar-grupo', methods=['POST'])
+@login_required
+def guardar_predicciones_grupo():
+
+    grupo = request.form.get('grupo')
+
+    partidos = Partido.query.filter_by(
+        grupo=grupo
+    ).all()
+
+    for partido in partidos:
+
+        goles_local = request.form.get(
+            f'goles_local_{partido.id}'
+        )
+
+        goles_visitante = request.form.get(
+            f'goles_visitante_{partido.id}'
+        )
+
+        if goles_local is None or goles_visitante is None:
+            continue
+
+        goles_local = int(goles_local)
+        goles_visitante = int(goles_visitante)
+
+        if goles_local > goles_visitante:
+            ganador = 1
+
+        elif goles_visitante > goles_local:
+            ganador = 2
+
+        else:
+            ganador = 0
+
+        existe = Prediccion.query.filter_by(
+            usuario_id=current_user.id,
+            partido_id=partido.id
+        ).first()
+
+        if existe:
+
+            existe.goles_local = goles_local
+            existe.goles_visitante = goles_visitante
+            existe.ganador = ganador
+
+        else:
+
+            nueva = Prediccion(
+                usuario_id=current_user.id,
+                partido_id=partido.id,
+                goles_local=goles_local,
+                goles_visitante=goles_visitante,
+                ganador=ganador
+            )
+
+            db.session.add(nueva)
+
+    db.session.commit()
+
+    flash(
+        f'Predicciones del Grupo {grupo} guardadas correctamente',
+        'success'
+    )
+
+    return redirect(
+        url_for('predicciones')
+    )
+
+
 @app.route('/usuario/clasificacion_16')
 @login_required
 def clasificacion_16():
