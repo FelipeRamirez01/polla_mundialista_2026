@@ -239,18 +239,19 @@ def actualizar_puntos_partido(partido_id):
                 ganador_predicho = 2
 
             # 3 puntos marcador exacto
-            if (
-                pred.goles_local == partido.goles_local
-                and
-                pred.goles_visitante == partido.goles_visitante
-            ):
+            #if (
+            #    pred.goles_local == partido.goles_local
+            #    and
+            #    pred.goles_visitante == partido.goles_visitante
+            #):
 
-                pred.puntos = 3
+            #    pred.puntos = 3
 
             # 1 punto ganador acertado
-            elif ganador_predicho == ganador_real:
+            #elif ganador_predicho == ganador_real:
+            if ganador_predicho == ganador_real:
 
-                pred.puntos = 1
+                pred.puntos = 5
 
             # 0 puntos
             else:
