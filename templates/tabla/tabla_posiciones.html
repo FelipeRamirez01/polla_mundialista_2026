@@ -29,6 +29,7 @@
                             <th width="10%">#</th>
                             <th width="60%">Usuario</th>
                             <th width="30%">Puntos</th>
+                            <th width="30%">Predicciones</th>
                         </tr>
 
                     </thead>
@@ -91,6 +92,20 @@
                                     {{ usuario.total_puntos }} pts
 
                                 </span>
+
+                            </td>
+
+                                                        <!-- PREDICCIONES -->
+                            <td>
+
+                                <a href="{{ url_for('ver_bracket_usuario', usuario_id=usuario.id) }}"
+                                    class="btn btn-outline-primary btn-sm">
+
+                                    <i class="bi bi-eye-fill"></i>
+
+                                    Ver Predicciones
+
+                                </a>
 
                             </td>
 
