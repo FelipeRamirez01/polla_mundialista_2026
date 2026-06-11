@@ -7,7 +7,7 @@ from models.partido import Partido
 from models.prediccion import Prediccion
 from models.puntaje import Puntaje
 from models.partido_eliminacion import PartidoEliminacion
-
+from models.usuario import Usuario
 
 @app.route('/usuario/predicciones')
 @login_required
