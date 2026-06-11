@@ -1576,6 +1576,64 @@ def bracket():
 
     )
 
+@app.route('/usuario/bracket/<int:usuario_id>')
+@login_required
+def ver_bracket_usuario(usuario_id):
+
+    usuario = Usuario.query.get_or_404(usuario_id)
+
+    orden_grupos = [
+        'A','B','C','D','E','F',
+        'G','H','I','J','K','L'
+    ]
+
+    grupos = {}
+
+    for letra in orden_grupos:
+
+        grupos[letra] = Partido.query.filter_by(
+            grupo=letra
+        ).order_by(
+            Partido.fecha.asc()
+        ).all()
+
+    predicciones = Prediccion.query.filter_by(
+        usuario_id=usuario_id
+    ).all()
+
+    predicciones_dict = {
+        p.partido_id: p
+        for p in predicciones
+    }
+
+    tablas = calcular_tablas_usuario(
+        usuario_id
+    )
+
+    mejores_terceros = obtener_mejores_terceros(
+        usuario_id
+    )
+
+    eliminacion = PartidoEliminacion.query.filter_by(
+        usuario_id=usuario_id
+    ).all()
+
+    datos = {
+        p.numero_partido: p
+        for p in eliminacion
+    }
+
+    return render_template(
+        'usuario/bracket.html',
+        usuario=usuario,
+        grupos=grupos,
+        tablas=tablas,
+        mejores_terceros=mejores_terceros,
+        predicciones_dict=predicciones_dict,
+        datos=datos
+    )
+
+
 
 @app.route('/test_tablas')
 def test_tablas():
