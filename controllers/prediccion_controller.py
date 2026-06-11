@@ -1511,7 +1511,7 @@ def guardar_final():
 @app.route('/usuario/bracket')
 @login_required
 def bracket():
-
+    usuario = Usuario.query.get_or_404(current_user.id)
     orden_grupos = [
         'A','B','C','D','E','F',
         'G','H','I','J','K','L'
@@ -1563,6 +1563,7 @@ def bracket():
     return render_template(
 
         'usuario/bracket.html',
+        usuario=usuario,
 
         grupos=grupos,
 
