@@ -1635,7 +1635,7 @@ def ver_bracket_usuario(usuario_id):
     )
 
 from datetime import datetime, date
-
+from zoneinfo import ZoneInfo
 
 @app.route('/usuario/resultados-partidos')
 @login_required
@@ -1644,7 +1644,9 @@ def resultados_partidos():
     grupo = request.args.get('grupo')
     fecha = request.args.get('fecha')
 
-    hoy = date.today()
+    hoy = datetime.now(
+        ZoneInfo("America/Bogota")
+    ).date()
 
     query = Partido.query
 
