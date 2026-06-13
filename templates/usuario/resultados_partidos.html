@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4 mb-5">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-dark text-white">
+
+            <h3 class="mb-0">
+                Resultados y Predicciones
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <!-- FILTROS -->
+
+            <form method="GET" class="row g-3 mb-4">
+
+                <div class="col-md-3">
+
+                    <label class="form-label">
+                        Grupo
+                    </label>
+
+                    <select name="grupo" class="form-select">
+
+                        <option value="">
+                            Todos
+                        </option>
+
+                        {% for letra in ['A','B','C','D','E','F','G','H','I','J','K','L'] %}
+
+                        <option value="{{ letra }}"
+                            {% if grupo == letra %}selected{% endif %}>
+
+                            Grupo {{ letra }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label class="form-label">
+                        Fecha
+                    </label>
+
+                    <input type="date"
+                           name="fecha"
+                           value="{{ fecha }}"
+                           class="form-control">
+
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+
+                    <button class="btn btn-primary w-100">
+
+                        Filtrar
+
+                    </button>
+
+                </div>
+
+            </form>
+
+            {% if datos %}
+
+            <div class="accordion" id="accordionPartidos">
+
+                {% for item in datos %}
+
+                <div class="accordion-item mb-3">
+
+                    <h2 class="accordion-header">
+
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#partido{{ item.partido.id }}">
+
+                            <div class="w-100">
+
+                                <div class="row">
+
+                                    <div class="col-md-6">
+
+                                        <strong>
+                                            Grupo {{ item.partido.grupo }}
+                                        </strong>
+
+                                        |
+
+                                        {{ item.partido.equipo_local }}
+
+                                        vs
+
+                                        {{ item.partido.equipo_visitante }}
+
+                                    </div>
+
+                                    <div class="col-md-2 text-center">
+
+                                        {% if item.partido.goles_local is not none and item.partido.goles_visitante is not none %}
+
+                                            <span class="badge bg-success fs-6">
+
+                                                {{ item.partido.goles_local }}
+
+                                                -
+
+                                                {{ item.partido.goles_visitante }}
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="badge bg-secondary">
+
+                                                Sin jugar
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                    <div class="col-md-4 text-end">
+
+                                        <span class="badge bg-success">
+
+                                            3 pts:
+                                            {{ item.total_3 }}
+
+                                        </span>
+
+                                        <span class="badge bg-warning text-dark">
+
+                                            1 pt:
+                                            {{ item.total_1 }}
+
+                                        </span>
+
+                                        <span class="badge bg-danger">
+
+                                            0 pts:
+                                            {{ item.total_0 }}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </button>
+
+                    </h2>
+
+                    <div id="partido{{ item.partido.id }}"
+                         class="accordion-collapse collapse"
+                         data-bs-parent="#accordionPartidos">
+
+                        <div class="accordion-body">
+
+                            {% if item.predicciones %}
+
+                            <div class="table-responsive">
+
+                                <table class="table table-striped table-hover">
+
+                                    <thead class="table-dark">
+
+                                        <tr>
+
+                                            <th>Usuario</th>
+
+                                            <th>Predicción</th>
+
+                                            <th>Puntos</th>
+
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+
+                                        {% for pred in item.predicciones %}
+
+                                        <tr>
+
+                                            <td>
+
+                                                {{ pred.usuario }}
+
+                                            </td>
+
+                                            <td>
+
+                                                {{ pred.goles_local }}
+
+                                                -
+
+                                                {{ pred.goles_visitante }}
+
+                                            </td>
+
+                                            <td>
+
+                                                {% if pred.puntos == 3 %}
+
+                                                    <span class="badge bg-success">
+
+                                                        3 pts
+
+                                                    </span>
+
+                                                {% elif pred.puntos == 1 %}
+
+                                                    <span class="badge bg-warning text-dark">
+
+                                                        1 pt
+
+                                                    </span>
+
+                                                {% else %}
+
+                                                    <span class="badge bg-danger">
+
+                                                        0 pts
+
+                                                    </span>
+
+                                                {% endif %}
+
+                                            </td>
+
+                                        </tr>
+
+                                        {% endfor %}
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                            {% else %}
+
+                            <div class="alert alert-warning">
+
+                                No hay predicciones registradas.
+
+                            </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% else %}
+
+            <div class="alert alert-warning">
+
+                No existen partidos para los filtros seleccionados.
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
