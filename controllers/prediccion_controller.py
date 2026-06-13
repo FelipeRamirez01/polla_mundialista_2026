@@ -1634,6 +1634,107 @@ def ver_bracket_usuario(usuario_id):
         datos=datos
     )
 
+from datetime import datetime, date
+
+
+@app.route('/usuario/resultados-partidos')
+@login_required
+def resultados_partidos():
+
+    grupo = request.args.get('grupo')
+    fecha = request.args.get('fecha')
+
+    hoy = date.today()
+
+    query = Partido.query
+
+    if grupo:
+
+        query = query.filter(
+            Partido.grupo == grupo
+        )
+
+    if fecha:
+
+        try:
+
+            fecha_busqueda = datetime.strptime(
+                fecha,
+                '%Y-%m-%d'
+            ).date()
+
+            query = query.filter(
+                db.func.date(Partido.fecha) == fecha_busqueda
+            )
+
+        except ValueError:
+
+            query = query.filter(
+                db.func.date(Partido.fecha) == hoy
+            )
+
+    else:
+
+        query = query.filter(
+            db.func.date(Partido.fecha) == hoy
+        )
+
+    partidos = query.order_by(
+        Partido.grupo.asc(),
+        Partido.fecha.asc()
+    ).all()
+
+    datos = []
+
+    for partido in partidos:
+
+        predicciones = db.session.query(
+            Usuario.nombre.label('usuario'),
+            Prediccion.goles_local,
+            Prediccion.goles_visitante,
+            Prediccion.puntos
+        ).join(
+            Usuario,
+            Usuario.id == Prediccion.usuario_id
+        ).filter(
+            Prediccion.partido_id == partido.id
+        ).order_by(
+            Prediccion.puntos.desc(),
+            Usuario.nombre.asc()
+        ).all()
+
+        total_3 = sum(
+            1 for pred in predicciones
+            if pred.puntos == 3
+        )
+
+        total_1 = sum(
+            1 for pred in predicciones
+            if pred.puntos == 1
+        )
+
+        total_0 = sum(
+            1 for pred in predicciones
+            if pred.puntos == 0
+        )
+
+        datos.append({
+
+            'partido': partido,
+            'predicciones': predicciones,
+            'total_3': total_3,
+            'total_1': total_1,
+            'total_0': total_0
+
+        })
+
+    return render_template(
+        'usuario/resultados_partidos.html',
+        datos=datos,
+        grupo=grupo,
+        fecha=fecha,
+        hoy=hoy
+    )
 
 
 @app.route('/test_tablas')
