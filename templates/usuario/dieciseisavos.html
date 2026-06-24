@@ -37,14 +37,12 @@
 
                         <input type="hidden" name="equipo_visitante" value="{{ partido.visitante }}">
 
-                        <div class="row align-items-center">
+                        <div class="row align-items-center mb-4">
 
                             <div class="col-5 text-center">
 
                                 <strong>
-
                                     {{ partido.local }}
-
                                 </strong>
 
                             </div>
@@ -58,36 +56,38 @@
                             <div class="col-5 text-center">
 
                                 <strong>
-
                                     {{ partido.visitante }}
-
                                 </strong>
 
                             </div>
 
                         </div>
 
-                        <hr>
+                        <div class="d-grid gap-3">
 
-                        <div class="row">
+                            <input type="radio" class="btn-check" name="ganador" id="local{{ partido.numero }}"
+                                value="local" required>
 
-                            <div class="col">
+                            <label class="btn btn-outline-primary btn-lg" for="local{{ partido.numero }}">
 
-                                <input type="number" name="goles_local" class="form-control" min="0" required>
+                                🏆 Clasifica {{ partido.local }}
 
-                            </div>
+                            </label>
 
-                            <div class="col">
+                            <input type="radio" class="btn-check" name="ganador" id="visitante{{ partido.numero }}"
+                                value="visitante">
 
-                                <input type="number" name="goles_visitante" class="form-control" min="0" required>
+                            <label class="btn btn-outline-success btn-lg" for="visitante{{ partido.numero }}">
 
-                            </div>
+                                🏆 Clasifica {{ partido.visitante }}
+
+                            </label>
 
                         </div>
 
-                        <button class="btn btn-success mt-3 w-100">
+                        <button class="btn btn-success mt-4 w-100">
 
-                            Guardar Resultado
+                            Guardar Clasificado
 
                         </button>
 

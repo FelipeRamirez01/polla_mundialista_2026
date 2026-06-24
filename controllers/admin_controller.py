@@ -369,3 +369,90 @@ def admin_tabla_posiciones():
         tabla=tabla,
         grupo_id=grupo_id
     )
+
+
+
+@app.route('/admin/panel-calculos')
+@login_required
+def panel_calculos():
+
+    if current_user.rol.nombre != 'Administrador':
+
+        flash(
+            'No tiene permisos para acceder.',
+            'danger'
+        )
+
+        return redirect(
+            url_for('login')
+        )
+
+    return render_template(
+        'admin/panel_calculos.html'
+    )
+
+def validar_clasificados_dieciseisavos():
+
+    # Equipos reales que llegaron a Dieciseisavos
+    partidos_reales = Partido.query.filter(
+        Partido.numero_partido.between(73, 88)
+    ).all()
+
+    equipos_reales = set()
+
+    for partido in partidos_reales:
+
+        equipos_reales.add(
+            partido.equipo_local
+        )
+
+        equipos_reales.add(
+            partido.equipo_visitante
+        )
+
+    # Predicciones usuarios
+    predicciones = PartidoEliminacion.query.filter(
+        PartidoEliminacion.numero_partido.between(
+            73,
+            88
+        )
+    ).all()
+
+    for prediccion in predicciones:
+
+        puntos = 0
+
+        if prediccion.equipo_local in equipos_reales:
+            puntos += 5
+
+        if prediccion.equipo_visitante in equipos_reales:
+            puntos += 5
+
+        prediccion.puntos = puntos
+
+    db.session.commit()
+
+
+@app.route('/admin/validar-clasificados-dieciseisavos')
+@login_required
+def validar_clasificados_dieciseisavos_admin():
+
+    if current_user.rol.nombre != 'Administrador':
+
+        flash(
+            'No tiene permisos para acceder.',
+            'danger'
+        )
+
+        return redirect(url_for('login'))
+
+    validar_clasificados_dieciseisavos()
+
+    flash(
+        'Puntos por clasificados a Dieciseisavos actualizados correctamente.',
+        'success'
+    )
+
+    return redirect(
+        url_for('dashboard_admin')
+    )

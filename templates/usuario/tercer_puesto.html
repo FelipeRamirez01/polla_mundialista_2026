@@ -6,11 +6,11 @@
 
     {% if partido.numero not in guardados %}
 
-    <div class="card shadow-lg">
+    <div class="card shadow-lg border-0">
 
         <div class="card-header bg-secondary text-white">
 
-            <h3>
+            <h3 class="mb-0">
 
                 🥉 Partido por el Tercer Puesto
 
@@ -20,64 +20,74 @@
 
         <div class="card-body">
 
-            <form method="POST"
-                  action="{{ url_for('guardar_tercer_puesto') }}">
+            <form method="POST" action="{{ url_for('guardar_tercer_puesto') }}">
 
-                <input type="hidden"
-                       name="equipo_local"
-                       value="{{ partido.local }}">
+                <input type="hidden" name="equipo_local" value="{{ partido.local }}">
 
-                <input type="hidden"
-                       name="equipo_visitante"
-                       value="{{ partido.visitante }}">
+                <input type="hidden" name="equipo_visitante" value="{{ partido.visitante }}">
+                <div class="row align-items-center mb-4">
 
-                <div class="row align-items-center">
+                    <div class="col-md-5 text-center">
 
-                    <div class="col-md-4 text-center">
+                        <h4 class="fw-bold">
 
-                        <h4>{{ partido.local }}</h4>
+                            {{ partido.local }}
 
-                    </div>
-
-                    <div class="col-md-1">
-
-                        <input type="number"
-                               name="goles_local"
-                               class="form-control"
-                               min="0"
-                               required>
+                        </h4>
 
                     </div>
 
                     <div class="col-md-2 text-center">
 
-                        VS
+                        <span class="badge bg-dark fs-6">
+
+                            VS
+
+                        </span>
 
                     </div>
 
-                    <div class="col-md-1">
+                    <div class="col-md-5 text-center">
 
-                        <input type="number"
-                               name="goles_visitante"
-                               class="form-control"
-                               min="0"
-                               required>
+                        <h4 class="fw-bold">
 
-                    </div>
+                            {{ partido.visitante }}
 
-                    <div class="col-md-4 text-center">
-
-                        <h4>{{ partido.visitante }}</h4>
+                        </h4>
 
                     </div>
 
                 </div>
 
+                <div class="d-grid gap-3">
+
+                    <input type="radio" class="btn-check" name="ganador" id="local{{ partido.numero }}" value="local"
+                        required>
+
+                    <label class="btn btn-outline-warning btn-lg" for="local{{ partido.numero }}">
+
+                        🏆 Gana {{ partido.local }}
+
+                    </label>
+
+                    <input type="radio" class="btn-check" name="ganador" id="visitante{{ partido.numero }}"
+                        value="visitante">
+
+                    <label class="btn btn-outline-success btn-lg" for="visitante{{ partido.numero }}">
+
+                        🏆 Gana {{ partido.visitante }}
+
+                    </label>
+
+
+
+                </div>
+
                 <div class="text-center mt-4">
 
-                    <button class="btn btn-success">
+                    <button class="btn btn-success btn-lg">
 
-                        Guardar
+                        Guardar Tercer Puesto
 
                     </button>
 
@@ -88,21 +98,22 @@
         </div>
 
     </div>
+
     {% endif %}
 
-    
-            {% if guardados|length == 1 %}
-            <div class="text-center mt-4">
+    {% if guardados|length == 1 %}
 
-                <a href="{{ url_for('final_mundial') }}" class="btn btn-primary btn-lg">
+    <div class="text-center mt-4">
 
-                    Ver Partido por el Final →
+        <a href="{{ url_for('final_mundial') }}" class="btn btn-primary btn-lg">
 
-                </a>
-                
-            </div>
+            Ver Partido Final →
 
-            {% endif %}
+        </a>
+
+    </div>
+
+    {% endif %}
 
 </div>
 

@@ -6,9 +6,9 @@
 
     <div class="card shadow-lg border-warning">
 
-        <div class="card-header bg-warning">
+        <div class="card-header bg-warning text-center">
 
-            <h2>
+            <h2 class="mb-0">
 
                 🏆 Gran Final
 
@@ -18,54 +18,67 @@
 
         <div class="card-body">
 
-            <form method="POST"
-                  action="{{ url_for('guardar_final') }}">
+            <form method="POST" action="{{ url_for('guardar_final') }}">
 
-                <input type="hidden"
-                       name="equipo_local"
-                       value="{{ final.local }}">
+                <input type="hidden" name="equipo_local" value="{{ final.local }}">
 
-                <input type="hidden"
-                       name="equipo_visitante"
-                       value="{{ final.visitante }}">
+                <input type="hidden" name="equipo_visitante" value="{{ final.visitante }}">
 
-                <div class="row align-items-center">
+                <div class="row align-items-center mb-4">
 
-                    <div class="col-md-4 text-center">
+                    <div class="col-md-5 text-center">
 
-                        <h3>{{ final.local }}</h3>
+                        <h4 class="fw-bold">
 
-                    </div>
+                            {{ final.local }}
 
-                    <div class="col-md-1">
-
-                        <input type="number"
-                               name="goles_local"
-                               class="form-control"
-                               required>
+                        </h4>
 
                     </div>
 
                     <div class="col-md-2 text-center">
 
-                        <strong>VS</strong>
+                        <span class="badge bg-dark fs-6">
+
+                            VS
+
+                        </span>
 
                     </div>
 
-                    <div class="col-md-1">
+                    <div class="col-md-5 text-center">
 
-                        <input type="number"
-                               name="goles_visitante"
-                               class="form-control"
-                               required>
+                        <h4 class="fw-bold">
 
-                    </div>
+                            {{ final.visitante }}
 
-                    <div class="col-md-4 text-center">
-
-                        <h3>{{ final.visitante }}</h3>
+                        </h4>
 
                     </div>
+
+                </div>
+
+                <div class="d-grid gap-3">
+
+                    <input type="radio" class="btn-check" name="ganador" id="local{{ final.numero }}" value="local"
+                        required>
+
+                    <label class="btn btn-outline-warning btn-lg" for="local{{ final.numero }}">
+
+                        🏆 Ganador {{ final.local }}
+
+                    </label>
+
+                    <input type="radio" class="btn-check" name="ganador" id="visitante{{ final.numero }}"
+                        value="visitante">
+
+                    <label class="btn btn-outline-success btn-lg" for="visitante{{ final.numero }}">
+
+                        🏆 Ganador {{ final.visitante }}
+
+                    </label>
+
+
 
                 </div>
 
@@ -73,7 +86,7 @@
 
                     <button class="btn btn-success btn-lg">
 
-                        Guardar Resultado
+                        🏆 Guardar Campeón
 
                     </button>
 

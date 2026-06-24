@@ -4,7 +4,7 @@
 
 <div class="container mt-5">
 
-    <div class="card shadow-lg">
+    <div class="card shadow-lg border-0">
 
         <div class="card-header bg-primary text-white">
 
@@ -18,99 +18,111 @@
 
             {% for cruce in cruces %}
 
-            {% if cruce.numero not in guardados %}
+                {% if cruce.numero not in guardados %}
 
+                <div class="card mb-4 shadow-sm border-0">
 
-            <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
 
-                <div class="card-body">
+                        <h5 class="text-center mb-4">
 
-                    <h5 class="text-center">
+                            Partido {{ cruce.numero }}
 
-                        Partido {{ cruce.numero }}
+                        </h5>
 
-                    </h5>
+                        <form method="POST"
+                              action="{{ url_for('guardar_octavos') }}">
 
-                    <form method="POST"
-                          action="{{ url_for('guardar_octavos') }}">
+                            <input type="hidden"
+                                   name="numero_partido"
+                                   value="{{ cruce.numero }}">
 
-                        <input type="hidden"
-                               name="numero_partido"
-                               value="{{ cruce.numero }}">
+                            <input type="hidden"
+                                   name="equipo_local"
+                                   value="{{ cruce.local }}">
 
-                        <input type="hidden"
-                               name="equipo_local"
-                               value="{{ cruce.local }}">
+                            <input type="hidden"
+                                   name="equipo_visitante"
+                                   value="{{ cruce.visitante }}">
 
-                        <input type="hidden"
-                               name="equipo_visitante"
-                               value="{{ cruce.visitante }}">
+                            <div class="row align-items-center mb-4">
 
-                        <div class="row align-items-center">
+                                <div class="col-md-5 text-center">
 
-                            <div class="col-md-4 text-center">
+                                    <h4 class="fw-bold">
 
-                                <h4>
-                                    {{ cruce.local }}
-                                </h4>
+                                        {{ cruce.local }}
+
+                                    </h4>
+
+                                </div>
+
+                                <div class="col-md-2 text-center">
+
+                                    <span class="badge bg-dark fs-6">
+
+                                        VS
+
+                                    </span>
+
+                                </div>
+
+                                <div class="col-md-5 text-center">
+
+                                    <h4 class="fw-bold">
+
+                                        {{ cruce.visitante }}
+
+                                    </h4>
+
+                                </div>
 
                             </div>
 
-                            <div class="col-md-1">
+                            <div class="d-grid gap-3">
 
-                                <input type="number"
-                                       class="form-control"
-                                       name="goles_local"
-                                       min="0"
+                                <input type="radio"
+                                       class="btn-check"
+                                       name="ganador"
+                                       id="local{{ cruce.numero }}"
+                                       value="local"
                                        required>
 
-                            </div>
+                                <label class="btn btn-outline-primary btn-lg"
+                                       for="local{{ cruce.numero }}">
 
-                            <div class="col-md-2 text-center">
+                                    🏆 Clasifica {{ cruce.local }}
 
-                                <strong>VS</strong>
+                                </label>
 
-                            </div>
+                                <input type="radio"
+                                       class="btn-check"
+                                       name="ganador"
+                                       id="visitante{{ cruce.numero }}"
+                                       value="visitante">
 
-                            <div class="col-md-1">
+                                <label class="btn btn-outline-success btn-lg"
+                                       for="visitante{{ cruce.numero }}">
 
-                                <input type="number"
-                                       class="form-control"
-                                       name="goles_visitante"
-                                       min="0"
-                                       required>
+                                    🏆 Clasifica {{ cruce.visitante }}
 
-                            </div>
-
-                            <div class="col-md-4 text-center">
-
-                                <h4>
-                                    {{ cruce.visitante }}
-                                </h4>
+                                </label>
 
                             </div>
 
-                        </div>
+                            <button class="btn btn-success mt-4 w-100">
 
-                        <div class="text-center mt-3">
-
-                            <button
-                                class="btn btn-success">
-
-                                Guardar Resultado
+                                Guardar Clasificado
 
                             </button>
 
-                        </div>
+                        </form>
 
-                    </form>
+                    </div>
 
                 </div>
 
-            </div>
-
                 {% endif %}
-
 
             {% endfor %}
 
@@ -118,17 +130,19 @@
 
     </div>
 
+    {% if guardados|length == 8 %}
 
-        {% if guardados|length == 8 %}
     <div class="text-center mt-4">
 
-        <a href="{{ url_for('cuartos') }}" class="btn btn-primary btn-lg">
+        <a href="{{ url_for('cuartos') }}"
+           class="btn btn-primary btn-lg">
 
             Continuar a Cuartos →
 
         </a>
 
     </div>
+
     {% endif %}
 
 </div>

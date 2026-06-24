@@ -43,6 +43,16 @@ class PartidoEliminacion(db.Model):
 
     es_oficial = db.Column(db.Boolean,default=False)
 
+    puntos = db.Column(
+        db.Integer,
+        default=0
+    )
+
+    puntos_clasificacion = db.Column(
+        db.Integer,
+        default=0
+    )
+
     usuario = db.relationship(
         'Usuario',
         backref='partidos_eliminacion'

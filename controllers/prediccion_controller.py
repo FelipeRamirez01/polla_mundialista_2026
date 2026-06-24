@@ -824,65 +824,48 @@ from flask_login import login_required, current_user
 @login_required
 def guardar_dieciseisavos():
 
-    numero_partido = request.form['numero_partido']
+    ganador_fase = request.form['ganador']
 
-    goles_local = int(request.form['goles_local'])
-    goles_visitante = int(request.form['goles_visitante'])
+    if ganador_fase == 'local':
 
-    equipo_local = request.form['equipo_local']
-    equipo_visitante = request.form['equipo_visitante']
+        goles_local = 1
+        goles_visitante = 0
+        gano = request.form['equipo_local'],
+        perdio = request.form['equipo_visitante']
 
-    # Validar que no existan empates
-    if goles_local == goles_visitante:
+    else:
 
-        flash(
-            'En fase eliminatoria debe existir un ganador.',
-            'danger'
-        )
+        goles_local = 0
+        goles_visitante = 1
+        gano = request.form['equipo_visitante'],
+        perdio = request.form['equipo_local']
 
-        return redirect(
-            url_for('dieciseisavos')
-        )
-
-    ganador = (
-        equipo_local
-        if goles_local > goles_visitante
-        else equipo_visitante
-    )
-
-    nuevo = PartidoEliminacion(
+    partido = PartidoEliminacion(
 
         usuario_id=current_user.id,
 
         fase='Dieciseisavos',
 
-        numero_partido=numero_partido,
+        numero_partido=request.form['numero_partido'],
 
-        equipo_local=equipo_local,
+        equipo_local=request.form['equipo_local'],
 
-        equipo_visitante=equipo_visitante,
+        equipo_visitante=request.form['equipo_visitante'],
+        ganador=gano,
+        perdedor=perdio,
 
         goles_local=goles_local,
 
-        goles_visitante=goles_visitante,
-
-        ganador=ganador
+        goles_visitante=goles_visitante
 
     )
 
-    db.session.add(nuevo)
-
+    db.session.add(partido)
     db.session.commit()
 
-    flash(
-        'Resultado guardado correctamente',
-        'success'
-    )
+    flash('Clasificado guardado correctamente')
 
-    return redirect(
-        url_for('dieciseisavos')
-    )
-
+    return redirect(url_for('dieciseisavos'))
 
 @app.route('/usuario/octavos')
 @login_required
@@ -971,79 +954,48 @@ def octavos():
 @login_required
 def guardar_octavos():
 
-    numero_partido = int(
-        request.form['numero_partido']
-    )
+    ganador_fase = request.form['ganador']
 
-    equipo_local = request.form['equipo_local']
-    equipo_visitante = request.form['equipo_visitante']
+    if ganador_fase == 'local':
 
-    goles_local = int(
-        request.form['goles_local']
-    )
-
-    goles_visitante = int(
-        request.form['goles_visitante']
-    )
-
-    if goles_local > goles_visitante:
-
-        ganador = equipo_local
-        perdedor = equipo_visitante
+        goles_local = 1
+        goles_visitante = 0
+        gano = request.form['equipo_local']
+        perdio = request.form['equipo_visitante']
 
     else:
 
-        ganador = equipo_visitante
-        perdedor = equipo_local
+        goles_local = 0
+        goles_visitante = 1
+        gano = request.form['equipo_visitante']
+        perdio = request.form['equipo_local']
 
-    existente = PartidoEliminacion.query.filter_by(
+    partido = PartidoEliminacion(
+
         usuario_id=current_user.id,
-        numero_partido=numero_partido
-    ).first()
 
-    if existente:
+        fase='Octavos',
 
-        existente.goles_local = goles_local
-        existente.goles_visitante = goles_visitante
-        existente.ganador = ganador
-        existente.perdedor = perdedor
+        numero_partido=request.form['numero_partido'],
 
-    else:
+        equipo_local=request.form['equipo_local'],
 
-        nuevo = PartidoEliminacion(
+        equipo_visitante=request.form['equipo_visitante'],
 
-            usuario_id=current_user.id,
+        ganador=gano,   
+        perdedor=perdio,
+        goles_local=goles_local,
 
-            fase='Octavos',
+        goles_visitante=goles_visitante
 
-            numero_partido=numero_partido,
+    )
 
-            equipo_local=equipo_local,
-
-            equipo_visitante=equipo_visitante,
-
-            goles_local=goles_local,
-
-            goles_visitante=goles_visitante,
-
-            ganador=ganador,
-
-            perdedor=perdedor
-
-        )
-
-        db.session.add(nuevo)
-
+    db.session.add(partido)
     db.session.commit()
 
-    flash(
-        'Resultado guardado correctamente',
-        'success'
-    )
+    flash('Clasificado guardado correctamente')
 
-    return redirect(
-        url_for('octavos')
-    )
+    return redirect(url_for('octavos'))
 
 
 
@@ -1110,90 +1062,48 @@ def cuartos():
 @login_required
 def guardar_cuartos():
 
-    numero_partido = int(
-        request.form['numero_partido']
-    )
+    ganador_fase = request.form['ganador']
 
-    equipo_local = request.form['equipo_local']
-    equipo_visitante = request.form['equipo_visitante']
-
-    goles_local = int(
-        request.form['goles_local']
-    )
-
-    goles_visitante = int(
-        request.form['goles_visitante']
-    )
-
-    if goles_local == goles_visitante:
-
-        flash(
-            'No puede existir empate en fase eliminatoria',
-            'danger'
-        )
-
-        return redirect(
-            url_for('cuartos')
-        )
-
-    if goles_local > goles_visitante:
-
-        ganador = equipo_local
-        perdedor = equipo_visitante
+    if ganador_fase == 'local':
+        goles_local = 1
+        goles_visitante = 0
+        gano = request.form['equipo_local']
+        perdio = request.form['equipo_visitante']
 
     else:
+        goles_local = 0
+        goles_visitante = 1
+        gano = request.form['equipo_visitante'] 
+        perdio = request.form['equipo_local']
 
-        ganador = equipo_visitante
-        perdedor = equipo_local
+    partido = PartidoEliminacion(
 
-    partido = PartidoEliminacion.query.filter_by(
         usuario_id=current_user.id,
-        numero_partido=numero_partido
-    ).first()
 
-    if partido:
+        fase='Cuartos',
 
-        partido.goles_local = goles_local
-        partido.goles_visitante = goles_visitante
-        partido.ganador = ganador
-        partido.perdedor = perdedor
+        numero_partido=request.form['numero_partido'],
 
-    else:
+        equipo_local=request.form['equipo_local'],
 
-        partido = PartidoEliminacion(
+        equipo_visitante=request.form['equipo_visitante'],
+        ganador=gano,
 
-            usuario_id=current_user.id,
+        perdedor=perdio,
 
-            fase='Cuartos',
+        goles_local=goles_local,
 
-            numero_partido=numero_partido,
+        goles_visitante=goles_visitante
 
-            equipo_local=equipo_local,
+    )
 
-            equipo_visitante=equipo_visitante,
-
-            goles_local=goles_local,
-
-            goles_visitante=goles_visitante,
-
-            ganador=ganador,
-
-            perdedor=perdedor
-
-        )
-
-        db.session.add(partido)
-
+    db.session.add(partido)
     db.session.commit()
 
-    flash(
-        'Resultado guardado correctamente',
-        'success'
-    )
+    flash('Clasificado guardado correctamente')
 
-    return redirect(
-        url_for('cuartos')
-    )
+    return redirect(url_for('cuartos'))
+
 
 
 @app.route('/usuario/semifinales')
@@ -1247,90 +1157,51 @@ def semifinales():
 @login_required
 def guardar_semifinales():
 
-    numero_partido = int(
-        request.form['numero_partido']
-    )
+    ganador_fase = request.form['ganador']
 
-    equipo_local = request.form['equipo_local']
-    equipo_visitante = request.form['equipo_visitante']
+    if ganador_fase == 'local':
 
-    goles_local = int(
-        request.form['goles_local']
-    )
+        goles_local = 1
+        goles_visitante = 0
+        gano = request.form['equipo_local'],
+        perdio = request.form['equipo_visitante']
 
-    goles_visitante = int(
-        request.form['goles_visitante']
-    )
-
-    if goles_local == goles_visitante:
-
-        flash(
-            'No puede existir empate en semifinales',
-            'danger'
-        )
-
-        return redirect(
-            url_for('semifinales')
-        )
-
-    if goles_local > goles_visitante:
-
-        ganador = equipo_local
-        perdedor = equipo_visitante
 
     else:
 
-        ganador = equipo_visitante
-        perdedor = equipo_local
+        goles_local = 0
+        goles_visitante = 1
+        gano = request.form['equipo_visitante'],
+        perdio = request.form['equipo_local']
 
-    partido = PartidoEliminacion.query.filter_by(
+    
+    partido = PartidoEliminacion(
+
         usuario_id=current_user.id,
-        numero_partido=numero_partido
-    ).first()
 
-    if partido:
+        fase='Semifinal',
 
-        partido.goles_local = goles_local
-        partido.goles_visitante = goles_visitante
-        partido.ganador = ganador
-        partido.perdedor = perdedor
+        numero_partido=request.form['numero_partido'],
 
-    else:
+        equipo_local=request.form['equipo_local'],
 
-        partido = PartidoEliminacion(
+        equipo_visitante=request.form['equipo_visitante'],
+        ganador=gano,
+        perdedor=perdio,
 
-            usuario_id=current_user.id,
+        goles_local=goles_local,
 
-            fase='Semifinal',
+        goles_visitante=goles_visitante,
 
-            numero_partido=numero_partido,
+    )
 
-            equipo_local=equipo_local,
-
-            equipo_visitante=equipo_visitante,
-
-            goles_local=goles_local,
-
-            goles_visitante=goles_visitante,
-
-            ganador=ganador,
-
-            perdedor=perdedor
-
-        )
-
-        db.session.add(partido)
-
+    db.session.add(partido)
     db.session.commit()
 
-    flash(
-        'Resultado guardado correctamente',
-        'success'
-    )
+    flash('Clasificado guardado correctamente')
 
-    return redirect(
-        url_for('semifinales')
-    )
+    return redirect(url_for('semifinales'))
+
 
 @app.route('/usuario/tercer_puesto')
 @login_required
@@ -1380,49 +1251,45 @@ def tercer_puesto():
 @login_required
 def guardar_tercer_puesto():
 
-    numero_partido = 103
+    ganador_fase = request.form['ganador']
 
-    equipo_local = request.form['equipo_local']
-    equipo_visitante = request.form['equipo_visitante']
+    if ganador_fase == 'local':
+        goles_local = 1
+        goles_visitante = 0
+        gano = request.form['equipo_local'],
+        perdio = request.form['equipo_visitante']
+    else:
+        goles_local = 0
+        goles_visitante = 1
+        gano = request.form['equipo_visitante'],
+        perdio = request.form['equipo_local']
 
-    goles_local = int(request.form['goles_local'])
-    goles_visitante = int(request.form['goles_visitante'])
+    partido = PartidoEliminacion(
 
-    ganador = equipo_local if goles_local > goles_visitante else equipo_visitante
-    perdedor = equipo_visitante if goles_local > goles_visitante else equipo_local
-
-    partido = PartidoEliminacion.query.filter_by(
         usuario_id=current_user.id,
-        numero_partido=103
-    ).first()
 
-    if not partido:
+        fase='Tercer Puesto',
 
-        partido = PartidoEliminacion(
-            usuario_id=current_user.id,
-            fase='Tercer Puesto',
-            numero_partido=103
-        )
+        numero_partido=103,
 
-        db.session.add(partido)
+        equipo_local=request.form['equipo_local'],
 
-    partido.equipo_local = equipo_local
-    partido.equipo_visitante = equipo_visitante
-    partido.goles_local = goles_local
-    partido.goles_visitante = goles_visitante
-    partido.ganador = ganador
-    partido.perdedor = perdedor
+        equipo_visitante=request.form['equipo_visitante'],
+        ganador=gano,
+        perdedor=perdio,
 
+        goles_local=goles_local,
+
+        goles_visitante=goles_visitante
+
+    )
+
+    db.session.add(partido)
     db.session.commit()
 
-    flash(
-        'Tercer puesto guardado',
-        'success'
-    )
+    flash('Resultado guardado correctamente')
 
-    return redirect(
-        url_for('tercer_puesto')
-    )
+    return redirect(url_for('tercer_puesto'))
 
 @app.route('/usuario/final_mundial')
 @login_required
@@ -1461,51 +1328,45 @@ def final_mundial():
 @login_required
 def guardar_final():
 
-    equipo_local = request.form['equipo_local']
-    equipo_visitante = request.form['equipo_visitante']
+    ganador_fase = request.form['ganador']
 
-    goles_local = int(request.form['goles_local'])
-    goles_visitante = int(request.form['goles_visitante'])
+    if ganador_fase == 'local':
+        goles_local = 1
+        goles_visitante = 0
+        gano = request.form['equipo_local'],
+        perdio = request.form['equipo_visitante']
+    else:
+        goles_local = 0
+        goles_visitante = 1
+        gano = request.form['equipo_visitante'],
+        perdio = request.form['equipo_local']
 
-    ganador = equipo_local if goles_local > goles_visitante else equipo_visitante
-    perdedor = equipo_visitante if goles_local > goles_visitante else equipo_local
+    partido = PartidoEliminacion(
 
-    partido = PartidoEliminacion.query.filter_by(
         usuario_id=current_user.id,
-        numero_partido=104
-    ).first()
 
-    if not partido:
+        fase='Final',
 
-        partido = PartidoEliminacion(
+        numero_partido=104,
 
-            usuario_id=current_user.id,
+        equipo_local=request.form['equipo_local'],
 
-            fase='Final',
+        equipo_visitante=request.form['equipo_visitante'],
+        ganador=gano,
+        perdedor=perdio,
 
-            numero_partido=104
+        goles_local=goles_local,
 
-        )
+        goles_visitante=goles_visitante
 
-        db.session.add(partido)
+     )
 
-    partido.equipo_local = equipo_local
-    partido.equipo_visitante = equipo_visitante
-    partido.goles_local = goles_local
-    partido.goles_visitante = goles_visitante
-    partido.ganador = ganador
-    partido.perdedor = perdedor
-
+    db.session.add(partido)
     db.session.commit()
 
-    flash(
-        'Final guardada correctamente',
-        'success'
-    )
+    flash('Campeón registrado correctamente')
 
-    return redirect(
-        url_for('bracket')
-    )
+    return redirect(url_for('bracket'))
 
 
 @app.route('/usuario/bracket')

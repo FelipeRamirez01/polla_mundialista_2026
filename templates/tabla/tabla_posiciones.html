@@ -28,7 +28,8 @@
                         <tr>
                             <th width="10%">#</th>
                             <th width="60%">Usuario</th>
-                            <th width="30%">Puntos</th>
+
+                            <th width="30%">Total Puntos</th>
                             <th width="30%">Predicciones</th>
                         </tr>
 
@@ -38,7 +39,7 @@
 
                         {% for usuario in tabla %}
 
-                        <tr {% if usuario.id == current_user.id %}class="table-primary fw-bold"{% endif %}>
+                        <tr {% if usuario.id==current_user.id %}class="table-primary fw-bold" {% endif %}>
 
                             <!-- POSICION -->
                             <td>
@@ -73,7 +74,7 @@
 
                             <!-- USUARIO -->
 
-                            
+
                             <td class="text-start fw-semibold">
 
                                 <i class="bi bi-person-circle text-primary"></i>
@@ -83,6 +84,8 @@
                             </td>
 
                             <!-- PUNTOS -->
+     
+
                             <td>
 
                                 <span class="badge bg-success fs-6 px-3 py-2">
@@ -93,9 +96,18 @@
 
                                 </span>
 
+                                <small class="text-muted">
+
+                                    Grupos: {{ usuario.puntos_grupos }}
+                                    |
+                                    Eliminación: {{ usuario.puntos_eliminacion }}
+
+                                </small>
+
                             </td>
 
-                                                        <!-- PREDICCIONES -->
+
+                            <!-- PREDICCIONES -->
                             <td>
 
                                 <a href="{{ url_for('ver_bracket_usuario', usuario_id=usuario.id) }}"

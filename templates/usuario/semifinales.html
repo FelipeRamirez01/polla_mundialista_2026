@@ -4,11 +4,11 @@
 
 <div class="container mt-5">
 
-    <div class="card shadow-lg">
+    <div class="card shadow-lg border-0">
 
-        <div class="card-header bg-danger text-white">
+        <div class="card-header bg-warning">
 
-            <h3 class="mb-0">
+            <h3 class="mb-0 text-dark">
 
                 🏆 Semifinales
 
@@ -22,15 +22,15 @@
 
             {% if cruce.numero not in guardados %}
 
-            <div class="card mb-4 shadow-sm">
+            <div class="card mb-4 shadow-sm border-0">
 
                 <div class="card-body">
 
-                    <h4 class="text-center mb-4">
+                    <h5 class="text-center mb-4">
 
                         Partido {{ cruce.numero }}
 
-                    </h4>
+                    </h5>
 
                     <form method="POST" action="{{ url_for('guardar_semifinales') }}">
 
@@ -40,55 +40,67 @@
 
                         <input type="hidden" name="equipo_visitante" value="{{ cruce.visitante }}">
 
-                        <div class="row align-items-center">
+                        <div class="row align-items-center mb-4">
 
-                            <div class="col-md-4 text-center">
+                            <div class="col-md-5 text-center">
 
                                 <h4 class="fw-bold">
+
                                     {{ cruce.local }}
+
                                 </h4>
-
-                            </div>
-
-                            <div class="col-md-1">
-
-                                <input type="number" class="form-control text-center" name="goles_local" min="0"
-                                    required>
 
                             </div>
 
                             <div class="col-md-2 text-center">
 
-                                <h3>VS</h3>
+                                <span class="badge bg-dark fs-6">
+
+                                    VS
+
+                                </span>
 
                             </div>
 
-                            <div class="col-md-1">
-
-                                <input type="number" class="form-control text-center" name="goles_visitante" min="0"
-                                    required>
-
-                            </div>
-
-                            <div class="col-md-4 text-center">
+                            <div class="col-md-5 text-center">
 
                                 <h4 class="fw-bold">
+
                                     {{ cruce.visitante }}
+
                                 </h4>
 
                             </div>
 
                         </div>
 
-                        <div class="text-center mt-4">
+                        <div class="d-grid gap-3">
 
-                            <button type="submit" class="btn btn-success btn-lg">
+                            <input type="radio" class="btn-check" name="ganador" id="local{{ cruce.numero }}"
+                                value="local" required>
 
-                                Guardar Resultado
+                            <label class="btn btn-outline-warning btn-lg" for="local{{ cruce.numero }}">
 
-                            </button>
+                                🏆 Clasifica {{ cruce.local }}
+
+                            </label>
+
+                            <input type="radio" class="btn-check" name="ganador" id="visitante{{ cruce.numero }}"
+                                value="visitante">
+
+                            <label class="btn btn-outline-success btn-lg" for="visitante{{ cruce.numero }}">
+
+                                🏆 Clasifica {{ cruce.visitante }}
+
+                            </label>
 
                         </div>
+
+                        <button type="submit" class="btn btn-success btn-lg w-100 mt-4">
+
+                            Guardar Clasificado
+
+                        </button>
 
                     </form>
 
@@ -100,20 +112,27 @@
 
             {% endfor %}
 
-
-
-            {% if guardados|length == 2 %}
-            <div class="text-center mt-4">
-
-                <a href="{{ url_for('tercer_puesto') }}" class="btn btn-primary btn-lg">
-
-                    Ver Partido por el Tercer Puesto →
-
-                </a>
-                {% endif %}
-
-            </div>
-
         </div>
 
-        {% endblock %}
+    </div>
+    {% if guardados|length == 2 %}
+
+    <div class="text-center mt-5">
+
+        <a href="{{ url_for('tercer_puesto') }}" class="btn btn-primary btn-lg">
+
+            Ver Partido por el Tercer Puesto →
+
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

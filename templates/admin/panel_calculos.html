@@ -1,0 +1,90 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+
+    <div class="text-center mb-5">
+
+        <h1 class="fw-bold text-primary">
+
+            <i class="bi bi-gear-fill"></i>
+
+            Panel de Cálculos
+
+        </h1>
+
+        <p class="text-muted">
+
+            Herramientas administrativas para actualizar
+            automáticamente las puntuaciones de la polla.
+
+        </p>
+
+    </div>
+
+    <div class="row">
+
+        <!-- DIECISEISAVOS -->
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card shadow-lg border-warning h-100">
+
+                <div class="card-header bg-warning">
+
+                    <h5 class="mb-0">
+
+                        ⚽ Clasificados a Dieciseisavos
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p>
+
+                        Valida los equipos clasificados
+                        a Dieciseisavos y otorga:
+
+                    </p>
+
+                    <ul>
+
+                        <li>
+                            5 puntos por cada equipo acertado.
+                        </li>
+
+                        <li>
+                            Máximo 10 puntos por partido.
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="card-footer text-center">
+
+                    <a href="{{ url_for('validar_clasificados_dieciseisavos_admin') }}"
+                       class="btn btn-warning btn-lg"
+                       onclick="return confirm('¿Desea ejecutar el cálculo?')">
+
+                        Ejecutar
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+         
+
+    </div>
+
+
+</div>
+
+{% endblock %}

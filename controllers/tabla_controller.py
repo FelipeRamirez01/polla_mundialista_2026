@@ -7,6 +7,7 @@ from extensions import db
 
 from models.usuario import Usuario
 from models.prediccion import Prediccion
+from models.partido_eliminacion import PartidoEliminacion
 
 
 ##tabla_bp = Blueprint('tabla', __name__)
@@ -15,23 +16,73 @@ from models.prediccion import Prediccion
 @login_required
 def tabla_posiciones():
 
-    tabla = db.session.query(
-        Usuario.id,
-        Usuario.nombre,
+    puntos_grupos = db.session.query(
+    Prediccion.usuario_id,
+    func.coalesce(
+        func.sum(Prediccion.puntos),
+        0
+    ).label('puntos_grupos')
+    ).group_by(
+        Prediccion.usuario_id
+    ).subquery()
+
+    puntos_eliminacion = db.session.query(
+        PartidoEliminacion.usuario_id,
         func.coalesce(
-            func.sum(Prediccion.puntos), 0
+            func.sum(PartidoEliminacion.puntos),
+            0
+        ).label('puntos_eliminacion')
+    ).group_by(
+        PartidoEliminacion.usuario_id
+    ).subquery()
+
+    tabla = db.session.query(
+
+        Usuario.id,
+
+        Usuario.nombre,
+
+        func.coalesce(
+            puntos_grupos.c.puntos_grupos,
+            0
+        ).label('puntos_grupos'),
+
+        func.coalesce(
+            puntos_eliminacion.c.puntos_eliminacion,
+            0
+        ).label('puntos_eliminacion'),
+
+        (
+            func.coalesce(
+                puntos_grupos.c.puntos_grupos,
+                0
+            )
+            +
+            func.coalesce(
+                puntos_eliminacion.c.puntos_eliminacion,
+                0
+            )
         ).label('total_puntos')
+
     ).outerjoin(
-        Prediccion,
-        Prediccion.usuario_id == Usuario.id
+        puntos_grupos,
+        Usuario.id == puntos_grupos.c.usuario_id
+    ).outerjoin(
+        puntos_eliminacion,
+        Usuario.id == puntos_eliminacion.c.usuario_id
     ).filter(
         Usuario.grupo_id == current_user.grupo_id
-    ).group_by(
-        Usuario.id,
-        Usuario.nombre
     ).order_by(
-        func.coalesce(
-            func.sum(Prediccion.puntos), 0
+        (
+            func.coalesce(
+                puntos_grupos.c.puntos_grupos,
+                0
+            )
+            +
+            func.coalesce(
+                puntos_eliminacion.c.puntos_eliminacion,
+                0
+            )
         ).desc()
     ).all()
 
