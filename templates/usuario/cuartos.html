@@ -20,91 +20,115 @@
 
             {% for cruce in cruces %}
 
-                {% if cruce.numero not in guardados %}
+            {% if cruce.numero not in guardados %}
 
-                <div class="card mb-4 shadow-sm border-0">
+            <div class="card mb-4 shadow-sm border-0">
 
-                    <div class="card-body">
+                <div class="card-body">
 
-                        <h5 class="text-center mb-4">
+                    <h5 class="text-center mb-4">
 
-                            Partido {{ cruce.numero }}
+                        Partido {{ cruce.numero }}
 
-                        </h5>
+                    </h5>
 
-                        <form method="POST"
-                              action="{{ url_for('guardar_cuartos') }}">
+                    <form method="POST" action="{{ url_for('guardar_cuartos') }}">
 
-                            <input type="hidden"
-                                   name="numero_partido"
-                                   value="{{ cruce.numero }}">
+                        
+                        <input type="hidden" name="numero_partido" value="{{ cruce.numero }}">
 
-                            <input type="hidden"
-                                   name="equipo_local"
-                                   value="{{ cruce.local }}">
+                        <input type="hidden" name="equipo_local" value="{{ cruce.local }}">
 
-                            <input type="hidden"
-                                   name="equipo_visitante"
-                                   value="{{ cruce.visitante }}">
+                        <input type="hidden" name="equipo_visitante" value="{{ cruce.visitante }}">
 
-                            <div class="row align-items-center mb-4">
+                        <div class="row align-items-center mb-4">
 
-                                <div class="col-md-5 text-center">
+                            <div class="col-md-5 text-center">
 
-                                    <h4 class="fw-bold">
+                                <h4 class="fw-bold text-warning">
 
-                                        {{ cruce.local }}
+                                    {{ cruce.local }}
 
-                                    </h4>
+                                </h4>
 
-                                </div>
+                            </div>
 
-                                <div class="col-md-2 text-center">
+                            <div class="col-md-2 text-center">
 
-                                    <span class="badge bg-dark fs-6">
+                                <span class="badge bg-dark fs-6">
 
-                                        VS
+                                    VS
 
-                                    </span>
+                                </span>
 
-                                </div>
+                            </div>
 
-                                <div class="col-md-5 text-center">
+                            <div class="col-md-5 text-center">
 
-                                    <h4 class="fw-bold">
+                                <h4 class="fw-bold text-warning">
 
-                                        {{ cruce.visitante }}
+                                    {{ cruce.visitante }}
 
-                                    </h4>
+                                </h4>
 
-                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row mb-4">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-bold">
+
+                                    Goles {{ cruce.local }}
+
+                                </label>
+
+                                <input type="number" class="form-control" name="goles_local"
+                                    id="goles_local_{{ cruce.numero }}" min="0" required>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-bold">
+
+                                    Goles {{ cruce.visitante }}
+
+                                </label>
+
+                                <input type="number" class="form-control" name="goles_visitante"
+                                    id="goles_visitante_{{ cruce.numero }}" min="0" required>
+
+                            </div>
+
+                        </div>
+
+                        <div id="penales_{{ cruce.numero }}" class="mt-4" style="display:none;">
+
+                            <div class="alert alert-warning text-center">
+
+                                ⚠️ El partido terminó empatado.
+                                Seleccione quién clasifica por penales.
 
                             </div>
 
                             <div class="d-grid gap-3">
 
-                                <input type="radio"
-                                       class="btn-check"
-                                       name="ganador"
-                                       id="local{{ cruce.numero }}"
-                                       value="local"
-                                       required>
+                                <input type="radio" class="btn-check" name="ganador_penales"
+                                    id="penal_local_{{ cruce.numero }}" value="local">
 
-                                <label class="btn btn-outline-warning btn-lg"
-                                       for="local{{ cruce.numero }}">
+                                <label class="btn btn-outline-warning btn-lg" for="penal_local_{{ cruce.numero }}">
 
                                     🏆 Clasifica {{ cruce.local }}
 
                                 </label>
 
-                                <input type="radio"
-                                       class="btn-check"
-                                       name="ganador"
-                                       id="visitante{{ cruce.numero }}"
-                                       value="visitante">
+                                <input type="radio" class="btn-check" name="ganador_penales"
+                                    id="penal_visitante_{{ cruce.numero }}" value="visitante">
 
-                                <label class="btn btn-outline-success btn-lg"
-                                       for="visitante{{ cruce.numero }}">
+                                <label class="btn btn-outline-success btn-lg" for="penal_visitante_{{ cruce.numero }}">
 
                                     🏆 Clasifica {{ cruce.visitante }}
 
@@ -112,20 +136,22 @@
 
                             </div>
 
-                            <button type="submit"
-                                    class="btn btn-success btn-lg w-100 mt-4">
+                        </div>
 
-                                Guardar Clasificado
+                        <button type="submit" class="btn btn-success btn-lg w-100 mt-4">
 
-                            </button>
+                            Guardar Resultado
 
-                        </form>
+                        </button>
+                        
 
-                    </div>
+                    </form>
 
                 </div>
 
-                {% endif %}
+            </div>
+
+            {% endif %}
 
             {% endfor %}
 
@@ -137,8 +163,7 @@
 
     <div class="text-center mt-4">
 
-        <a href="{{ url_for('semifinales') }}"
-           class="btn btn-primary btn-lg">
+        <a href="{{ url_for('semifinales') }}" class="btn btn-primary btn-lg">
 
             Continuar a Semifinales →
 
@@ -149,5 +174,56 @@
     {% endif %}
 
 </div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    document.querySelectorAll('[id^="goles_local_"]').forEach(function(input) {
+
+        const numero = input.id.split('_')[2];
+
+        const local = document.getElementById(
+            'goles_local_' + numero
+        );
+
+        const visitante = document.getElementById(
+            'goles_visitante_' + numero
+        );
+
+        const penales = document.getElementById(
+            'penales_' + numero
+        );
+
+        function validarEmpate() {
+
+            if(
+                local.value !== '' &&
+                visitante.value !== '' &&
+                local.value === visitante.value
+            ){
+
+                penales.style.display = 'block';
+
+            } else {
+
+                penales.style.display = 'none';
+
+                document.querySelectorAll(
+                    'input[name="ganador_penales"]'
+                ).forEach(r => r.checked = false);
+
+            }
+
+        }
+
+        local.addEventListener('input', validarEmpate);
+        visitante.addEventListener('input', validarEmpate);
+
+    });
+
+});
+
+</script>
 
 {% endblock %}

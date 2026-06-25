@@ -28,11 +28,11 @@
 
                     <div class="col-md-5 text-center">
 
-                        <h4 class="fw-bold">
+                        <h3 class="fw-bold text-warning">
 
                             {{ final.local }}
 
-                        </h4>
+                        </h3>
 
                     </div>
 
@@ -48,56 +48,134 @@
 
                     <div class="col-md-5 text-center">
 
-                        <h4 class="fw-bold">
+                        <h3 class="fw-bold text-warning">
 
                             {{ final.visitante }}
 
-                        </h4>
+                        </h3>
 
                     </div>
 
                 </div>
 
-                <div class="d-grid gap-3">
+                <div class="row mb-4">
 
-                    <input type="radio" class="btn-check" name="ganador" id="local{{ final.numero }}" value="local"
-                        required>
+                    <div class="col-md-6">
 
-                    <label class="btn btn-outline-warning btn-lg" for="local{{ final.numero }}">
+                        <label class="form-label fw-bold">
 
-                        🏆 Ganador {{ final.local }}
+                            Goles {{ final.local }}
 
-                    </label>
+                        </label>
 
-                    <input type="radio" class="btn-check" name="ganador" id="visitante{{ final.numero }}"
-                        value="visitante">
+                        <input type="number" class="form-control form-control-lg" name="goles_local" id="goles_local"
+                            min="0" required>
 
-                    <label class="btn btn-outline-success btn-lg" for="visitante{{ final.numero }}">
+                    </div>
 
-                        🏆 Ganador {{ final.visitante }}
+                    <div class="col-md-6">
 
-                    </label>
+                        <label class="form-label fw-bold">
 
+                            Goles {{ final.visitante }}
 
+                        </label>
+
+                        <input type="number" class="form-control form-control-lg" name="goles_visitante"
+                            id="goles_visitante" min="0" required>
+
+                    </div>
+
+                </div>
+
+                <div id="penales" class="mt-4" style="display:none;">
+
+                    <div class="alert alert-warning text-center">
+
+                        ⚽ El partido terminó empatado.
+                        Seleccione quién gana la Copa por penales.
+
+                    </div>
+
+                    <div class="d-grid gap-3">
+
+                        <input type="radio" class="btn-check" name="ganador_penales" id="penal_local" value="local">
+
+                        <label class="btn btn-outline-warning btn-lg" for="penal_local">
+
+                            🏆 Campeón {{ final.local }}
+
+                        </label>
+
+                        <input type="radio" class="btn-check" name="ganador_penales" id="penal_visitante"
+                            value="visitante">
+
+                        <label class="btn btn-outline-success btn-lg" for="penal_visitante">
+
+                            🏆 Campeón {{ final.visitante }}
+
+                        </label>
+
+                    </div>
 
                 </div>
 
                 <div class="text-center mt-4">
 
-                    <button class="btn btn-success btn-lg">
+                    <button class="btn btn-success btn-lg w-100">
 
                         🏆 Guardar Campeón
 
                     </button>
 
                 </div>
+               
 
             </form>
+
 
         </div>
 
     </div>
 
 </div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    const local = document.getElementById('goles_local');
+    const visitante = document.getElementById('goles_visitante');
+    const penales = document.getElementById('penales');
+
+    function validarEmpate() {
+
+        if (
+            local.value !== '' &&
+            visitante.value !== '' &&
+            local.value === visitante.value
+        ) {
+
+            penales.style.display = 'block';
+
+        } else {
+
+            penales.style.display = 'none';
+
+            document.querySelectorAll(
+                '#penales input[type=radio]'
+            ).forEach(r => r.checked = false);
+
+        }
+
+    }
+
+    local.addEventListener('input', validarEmpate);
+    visitante.addEventListener('input', validarEmpate);
+
+});
+
+</script>
+
 
 {% endblock %}

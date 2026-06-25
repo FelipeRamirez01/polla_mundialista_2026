@@ -824,21 +824,37 @@ from flask_login import login_required, current_user
 @login_required
 def guardar_dieciseisavos():
 
-    ganador_fase = request.form['ganador']
+    equipo_local = request.form['equipo_local']
+    equipo_visitante = request.form['equipo_visitante']
 
-    if ganador_fase == 'local':
+    goles_local = int(request.form['goles_local'])
+    goles_visitante = int(request.form['goles_visitante'])
 
-        goles_local = 1
-        goles_visitante = 0
-        gano = request.form['equipo_local'],
-        perdio = request.form['equipo_visitante']
+    if goles_local > goles_visitante:
+
+        ganador = equipo_local
+        perdedor = equipo_visitante
+
+    elif goles_visitante > goles_local:
+
+        ganador = equipo_visitante
+        perdedor = equipo_local
 
     else:
 
-        goles_local = 0
-        goles_visitante = 1
-        gano = request.form['equipo_visitante'],
-        perdio = request.form['equipo_local']
+        ganador_penales = request.form['ganador_penales']
+
+        if ganador_penales == 'local':
+
+            ganador = equipo_local
+            perdedor = equipo_visitante
+
+        else:
+
+            ganador = equipo_visitante
+            perdedor = equipo_local
+
+
 
     partido = PartidoEliminacion(
 
@@ -851,8 +867,8 @@ def guardar_dieciseisavos():
         equipo_local=request.form['equipo_local'],
 
         equipo_visitante=request.form['equipo_visitante'],
-        ganador=gano,
-        perdedor=perdio,
+        ganador=ganador,
+        perdedor=perdedor,
 
         goles_local=goles_local,
 
@@ -954,21 +970,30 @@ def octavos():
 @login_required
 def guardar_octavos():
 
-    ganador_fase = request.form['ganador']
+    equipo_local = request.form['equipo_local']
+    equipo_visitante = request.form['equipo_visitante']
 
-    if ganador_fase == 'local':
+    goles_local = int(request.form['goles_local'])
+    goles_visitante = int(request.form['goles_visitante'])
 
-        goles_local = 1
-        goles_visitante = 0
-        gano = request.form['equipo_local']
-        perdio = request.form['equipo_visitante']
+    if goles_local > goles_visitante:
+        ganador = equipo_local
+        perdedor = equipo_visitante
+
+    elif goles_visitante > goles_local:
+            ganador = equipo_visitante
+            perdedor = equipo_local
 
     else:
+        ganador_penales = request.form['ganador_penales']
 
-        goles_local = 0
-        goles_visitante = 1
-        gano = request.form['equipo_visitante']
-        perdio = request.form['equipo_local']
+        if ganador_penales == 'local':
+            ganador = equipo_local
+            perdedor = equipo_visitante
+        else:
+            ganador = equipo_visitante
+            perdedor = equipo_local
+
 
     partido = PartidoEliminacion(
 
@@ -982,8 +1007,8 @@ def guardar_octavos():
 
         equipo_visitante=request.form['equipo_visitante'],
 
-        ganador=gano,   
-        perdedor=perdio,
+        ganador=ganador,   
+        perdedor=perdedor,
         goles_local=goles_local,
 
         goles_visitante=goles_visitante
@@ -1062,19 +1087,31 @@ def cuartos():
 @login_required
 def guardar_cuartos():
 
-    ganador_fase = request.form['ganador']
+    equipo_local = request.form['equipo_local']
+    equipo_visitante = request.form['equipo_visitante']
 
-    if ganador_fase == 'local':
-        goles_local = 1
-        goles_visitante = 0
-        gano = request.form['equipo_local']
-        perdio = request.form['equipo_visitante']
+    goles_local = int(request.form['goles_local'])
+    goles_visitante = int(request.form['goles_visitante'])
+
+    if goles_local > goles_visitante:
+        ganador = equipo_local
+        perdedor = equipo_visitante
+
+    elif goles_visitante > goles_local:
+            ganador = equipo_visitante
+            perdedor = equipo_local
 
     else:
-        goles_local = 0
-        goles_visitante = 1
-        gano = request.form['equipo_visitante'] 
-        perdio = request.form['equipo_local']
+        ganador_penales = request.form['ganador_penales']
+
+        if ganador_penales == 'local':
+            ganador = equipo_local
+            perdedor = equipo_visitante
+        else:
+            ganador = equipo_visitante
+            perdedor = equipo_local
+
+
 
     partido = PartidoEliminacion(
 
@@ -1087,9 +1124,9 @@ def guardar_cuartos():
         equipo_local=request.form['equipo_local'],
 
         equipo_visitante=request.form['equipo_visitante'],
-        ganador=gano,
+        ganador=ganador,
 
-        perdedor=perdio,
+        perdedor=perdedor,
 
         goles_local=goles_local,
 
@@ -1157,22 +1194,30 @@ def semifinales():
 @login_required
 def guardar_semifinales():
 
-    ganador_fase = request.form['ganador']
 
-    if ganador_fase == 'local':
+    equipo_local = request.form['equipo_local']
+    equipo_visitante = request.form['equipo_visitante']
 
-        goles_local = 1
-        goles_visitante = 0
-        gano = request.form['equipo_local'],
-        perdio = request.form['equipo_visitante']
+    goles_local = int(request.form['goles_local'])
+    goles_visitante = int(request.form['goles_visitante'])
 
+    if goles_local > goles_visitante:
+        ganador = equipo_local
+        perdedor = equipo_visitante
+
+    elif goles_visitante > goles_local:
+            ganador = equipo_visitante
+            perdedor = equipo_local
 
     else:
+        ganador_penales = request.form['ganador_penales']
 
-        goles_local = 0
-        goles_visitante = 1
-        gano = request.form['equipo_visitante'],
-        perdio = request.form['equipo_local']
+        if ganador_penales == 'local':
+            ganador = equipo_local
+            perdedor = equipo_visitante
+        else:
+            ganador = equipo_visitante
+            perdedor = equipo_local
 
     
     partido = PartidoEliminacion(
@@ -1186,8 +1231,8 @@ def guardar_semifinales():
         equipo_local=request.form['equipo_local'],
 
         equipo_visitante=request.form['equipo_visitante'],
-        ganador=gano,
-        perdedor=perdio,
+        ganador=ganador,
+        perdedor=perdedor,
 
         goles_local=goles_local,
 
@@ -1251,19 +1296,30 @@ def tercer_puesto():
 @login_required
 def guardar_tercer_puesto():
 
-    ganador_fase = request.form['ganador']
+    equipo_local = request.form['equipo_local']
+    equipo_visitante = request.form['equipo_visitante']
 
-    if ganador_fase == 'local':
-        goles_local = 1
-        goles_visitante = 0
-        gano = request.form['equipo_local'],
-        perdio = request.form['equipo_visitante']
+    goles_local = int(request.form['goles_local'])
+    goles_visitante = int(request.form['goles_visitante'])
+
+    if goles_local > goles_visitante:
+        ganador = equipo_local
+        perdedor = equipo_visitante
+
+    elif goles_visitante > goles_local:
+            ganador = equipo_visitante
+            perdedor = equipo_local
+
     else:
-        goles_local = 0
-        goles_visitante = 1
-        gano = request.form['equipo_visitante'],
-        perdio = request.form['equipo_local']
+        ganador_penales = request.form['ganador_penales']
 
+        if ganador_penales == 'local':
+            ganador = equipo_local
+            perdedor = equipo_visitante
+        else:
+            ganador = equipo_visitante
+            perdedor = equipo_local    
+        
     partido = PartidoEliminacion(
 
         usuario_id=current_user.id,
@@ -1275,8 +1331,8 @@ def guardar_tercer_puesto():
         equipo_local=request.form['equipo_local'],
 
         equipo_visitante=request.form['equipo_visitante'],
-        ganador=gano,
-        perdedor=perdio,
+        ganador=ganador,
+        perdedor=perdedor,
 
         goles_local=goles_local,
 
@@ -1328,18 +1384,29 @@ def final_mundial():
 @login_required
 def guardar_final():
 
-    ganador_fase = request.form['ganador']
+    equipo_local = request.form['equipo_local']
+    equipo_visitante = request.form['equipo_visitante']
 
-    if ganador_fase == 'local':
-        goles_local = 1
-        goles_visitante = 0
-        gano = request.form['equipo_local'],
-        perdio = request.form['equipo_visitante']
+    goles_local = int(request.form['goles_local'])
+    goles_visitante = int(request.form['goles_visitante'])
+
+    if goles_local > goles_visitante:
+        ganador = equipo_local
+        perdedor = equipo_visitante
+
+    elif goles_visitante > goles_local:
+            ganador = equipo_visitante
+            perdedor = equipo_local
+
     else:
-        goles_local = 0
-        goles_visitante = 1
-        gano = request.form['equipo_visitante'],
-        perdio = request.form['equipo_local']
+        ganador_penales = request.form['ganador_penales']
+
+        if ganador_penales == 'local':
+            ganador = equipo_local
+            perdedor = equipo_visitante
+        else:
+            ganador = equipo_visitante
+            perdedor = equipo_local    
 
     partido = PartidoEliminacion(
 
@@ -1352,8 +1419,8 @@ def guardar_final():
         equipo_local=request.form['equipo_local'],
 
         equipo_visitante=request.form['equipo_visitante'],
-        ganador=gano,
-        perdedor=perdio,
+        ganador=ganador,
+        perdedor=perdedor,
 
         goles_local=goles_local,
 
