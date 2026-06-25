@@ -18,7 +18,11 @@
 
         <div class="card-body">
 
-            <form method="POST" action="{{ url_for('guardar_final') }}">
+            <form method="POST" action="{{ url_for('guardar_eliminatoria') }}">
+
+                <input type="hidden" name="numero_partido" value="{{ final.numero }}">
+
+                <input type="hidden" name="fase" value="Final">
 
                 <input type="hidden" name="equipo_local" value="{{ final.local }}">
 

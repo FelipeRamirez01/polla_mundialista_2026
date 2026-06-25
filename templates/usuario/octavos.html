@@ -30,9 +30,10 @@
 
                     </h5>
 
-                    <form method="POST" action="{{ url_for('guardar_octavos') }}">
+                    <form method="POST" action="{{ url_for('guardar_eliminatoria') }}">
 
-                        
+                        <input type="hidden" name="fase" value="Octavos">
+
                         <input type="hidden" name="numero_partido" value="{{ cruce.numero }}">
 
                         <input type="hidden" name="equipo_local" value="{{ cruce.local }}">

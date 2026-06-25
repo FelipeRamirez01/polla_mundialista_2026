@@ -45,6 +45,41 @@ def predicciones():
         total_partidos == total_predicciones
     )
 
+
+
+    fases = [
+        ("Dieciseisavos", 16, "dieciseisavos"),
+        ("Octavos", 8, "octavos"),
+        ("Cuartos", 4, "cuartos"),
+        ("Semifinal", 2, "semifinales"),
+        ("Tercer Puesto", 1, "tercer_puesto"),
+        ("Final", 1, "final_mundial"),
+    ]
+
+    siguiente = None
+
+    for nombre, cantidad, ruta in fases:
+
+        total = PartidoEliminacion.query.filter_by(
+            usuario_id=current_user.id,
+            fase=nombre
+        ).count()
+
+        print(f"Fase: {nombre}, Total: {total}, Cantidad: {cantidad}")
+
+        
+
+        if total < cantidad:
+
+            siguiente = {
+                "nombre": nombre,
+                "ruta": ruta
+            }
+
+            break
+
+
+
     return render_template(
 
         'usuario/predicciones.html',
@@ -55,7 +90,9 @@ def predicciones():
 
         predicciones_ids=predicciones_ids,
 
-        grupos_completos=grupos_completos
+        grupos_completos=grupos_completos,
+
+        siguiente=siguiente
     )
 
 
@@ -1665,6 +1702,122 @@ def resultados_partidos():
         fecha=fecha,
         hoy=hoy
     )
+
+
+@app.route('/usuario/guardar_eliminatoria', methods=['POST'])
+@login_required
+def guardar_eliminatoria():
+
+
+    fase = request.form['fase']
+
+    numero_partido = request.form.get(
+        'numero_partido'
+    )
+
+    equipo_local = request.form['equipo_local']
+    equipo_visitante = request.form['equipo_visitante']
+
+    goles_local = int(
+        request.form['goles_local']
+    )
+
+    goles_visitante = int(
+        request.form['goles_visitante']
+    )
+
+    # Determinar ganador
+
+    if goles_local > goles_visitante:
+
+        ganador = equipo_local
+        perdedor = equipo_visitante
+
+    elif goles_visitante > goles_local:
+
+        ganador = equipo_visitante
+        perdedor = equipo_local
+
+    else:
+
+        ganador_penales = request.form[
+            'ganador_penales'
+        ]
+
+        if ganador_penales == 'local':
+
+            ganador = equipo_local
+            perdedor = equipo_visitante
+
+        else:
+
+            ganador = equipo_visitante
+            perdedor = equipo_local
+
+    existente = PartidoEliminacion.query.filter_by(
+        usuario_id=current_user.id,
+        fase=fase,
+        numero_partido=numero_partido
+    ).first()
+
+    if existente:
+
+        existente.equipo_local = equipo_local
+        existente.equipo_visitante = equipo_visitante
+
+        existente.goles_local = goles_local
+        existente.goles_visitante = goles_visitante
+
+        existente.ganador = ganador
+        existente.perdedor = perdedor
+
+    else:
+
+        nuevo = PartidoEliminacion(
+
+            usuario_id=current_user.id,
+
+            fase=fase,
+
+            numero_partido=numero_partido,
+
+            equipo_local=equipo_local,
+
+            equipo_visitante=equipo_visitante,
+
+            goles_local=goles_local,
+
+            goles_visitante=goles_visitante,
+
+            ganador=ganador,
+
+            perdedor=perdedor
+
+        )
+
+        db.session.add(nuevo)
+
+    db.session.commit()
+
+    flash(
+        f'{fase} guardado correctamente',
+        'success'
+    )
+
+    rutas = {
+        'Dieciseisavos': 'dieciseisavos',
+        'Octavos': 'octavos',
+        'Cuartos': 'cuartos',
+        'Semifinal': 'semifinales',
+        'Tercer Puesto': 'tercer_puesto',
+        'Final': 'bracket'
+    }
+
+    return redirect(
+        url_for(rutas[fase])
+    )
+
+
 
 
 @app.route('/test_tablas')

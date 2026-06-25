@@ -66,13 +66,36 @@
 
                 <div class="card-footer text-center">
 
-                    <a href="{{ url_for('validar_clasificados_dieciseisavos_admin') }}"
-                       class="btn btn-warning btn-lg"
-                       onclick="return confirm('¿Desea ejecutar el cálculo?')">
+                    {% if calculos.get('Dieciseisavos') and calculos['Dieciseisavos'].ejecutado %}
+
+                    <button class="btn btn-secondary btn-lg" disabled>
+
+                        ✅ Ejecutado
+
+                        {% if calculos['Dieciseisavos'].fecha_ejecucion %}
+
+                        <br>
+
+                        <small>
+
+                            {{ calculos['Dieciseisavos'].fecha_ejecucion.strftime('%d/%m/%Y %I:%M %p') }}
+
+                        </small>
+
+                        {% endif %}
+
+                    </button>
+
+                    {% else %}
+
+                    <a href="{{ url_for('validar_clasificados_dieciseisavos_admin') }}" class="btn btn-warning btn-lg"
+                        onclick="return confirm('¿Desea ejecutar el cálculo?')">
 
                         Ejecutar
 
                     </a>
+
+                    {% endif %}
 
                 </div>
 
@@ -80,7 +103,398 @@
 
         </div>
 
-         
+
+
+        <!-- OCTAVOS -->
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card shadow-lg border-warning h-100">
+
+                <div class="card-header bg-warning">
+
+                    <h5 class="mb-0">
+
+                        ⚽ Clasificados a Octavos
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p>
+
+                        Valida los equipos clasificados
+                        a Octavos y otorga:
+
+                    </p>
+
+                    <ul>
+
+                        <li>
+                            5 puntos por cada equipo acertado.
+                        </li>
+
+                        <li>
+                            Máximo 10 puntos por partido.
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="card-footer text-center">
+
+                    {% if calculos.get('Octavos') and calculos['Octavos'].ejecutado %}
+
+                    <button class="btn btn-secondary btn-lg" disabled>
+
+                        ✅ Ejecutado
+
+                        {% if calculos['Octavos'].fecha_ejecucion %}
+
+                        <br>
+
+                        <small>
+
+                            {{ calculos['Octavos'].fecha_ejecucion.strftime('%d/%m/%Y %I:%M %p') }}
+
+                        </small>
+
+                        {% endif %}
+
+                    </button>
+
+                    {% else %}
+
+                    <a href="{{ url_for('validar_clasificados_octavos_admin') }}" class="btn btn-warning btn-lg"
+                        onclick="return confirm('¿Desea ejecutar el cálculo?')">
+
+                        Ejecutar
+
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CUARTOS -->
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card shadow-lg border-warning h-100">
+
+                <div class="card-header bg-warning">
+
+                    <h5 class="mb-0">
+
+                        ⚽ Clasificados a Cuartos
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p>
+
+                        Valida los equipos clasificados
+                        a Cuartos y otorga:
+
+                    </p>
+
+                    <ul>
+
+                        <li>
+                            5 puntos por cada equipo acertado.
+                        </li>
+
+                        <li>
+                            Máximo 10 puntos por partido.
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="card-footer text-center">
+
+                    {% if calculos.get('Cuartos') and calculos['Cuartos'].ejecutado %}
+
+                    <button class="btn btn-secondary btn-lg" disabled>
+
+                        ✅ Ejecutado
+
+                        {% if calculos['Cuartos'].fecha_ejecucion %}
+
+                        <br>
+
+                        <small>
+
+                            {{ calculos['Cuartos'].fecha_ejecucion.strftime('%d/%m/%Y %I:%M %p') }}
+
+                        </small>
+                        {% endif %}
+                    </button>
+
+                    {% else %}
+
+                    <a href="{{ url_for('validar_clasificados_cuartos_admin') }}" class="btn btn-warning btn-lg"
+                        onclick="return confirm('¿Desea ejecutar el cálculo?')">
+
+                        Ejecutar
+
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SEMIS -->
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card shadow-lg border-warning h-100">
+
+                <div class="card-header bg-warning">
+
+                    <h5 class="mb-0">
+
+                        ⚽ Clasificados a Semifinales
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p>
+
+                        Valida los equipos clasificados
+                        a Semifinales y otorga:
+
+                    </p>
+
+                    <ul>
+
+                        <li>
+                            5 puntos por cada equipo acertado.
+                        </li>
+
+                        <li>
+                            Máximo 10 puntos por partido.
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="card-footer text-center">
+
+                    {% if calculos.get('Semifinal') and calculos['Semifinal'].ejecutado %}
+
+                    <button class="btn btn-secondary btn-lg" disabled>
+
+                        ✅ Ejecutado
+
+                        {% if calculos['Semifinal'].fecha_ejecucion %}
+
+                        <br>
+
+                        <small>
+
+                            {{ calculos['Semifinal'].fecha_ejecucion.strftime('%d/%m/%Y %I:%M %p') }}
+
+                        </small>
+                        {% endif %}
+                    </button>
+
+                    {% else %}
+
+                    <a href="{{ url_for('validar_clasificados_semis_admin') }}" class="btn btn-warning btn-lg"
+                        onclick="return confirm('¿Desea ejecutar el cálculo?')">
+
+                        Ejecutar
+
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TERCERO PUESTO -->
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card shadow-lg border-warning h-100">
+
+                <div class="card-header bg-warning">
+
+                    <h5 class="mb-0">
+
+                        ⚽ Clasificados a Tercer Puesto
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p>
+
+                        Valida los equipos clasificados
+                        a Tercer Puesto y otorga:
+
+                    </p>
+
+                    <ul>
+
+                        <li>
+                            5 puntos por cada equipo acertado.
+                        </li>
+
+                        <li>
+                            Máximo 10 puntos por partido.
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="card-footer text-center">
+
+                    {% if calculos.get('Tercer Puesto') and calculos['Tercer Puesto'].ejecutado %}
+
+                    <button class="btn btn-secondary btn-lg" disabled>
+
+                        ✅ Ejecutado
+
+                        {% if calculos['Tercer Puesto'].fecha_ejecucion %}
+
+                        <br>
+
+                        <small>
+
+                            {{ calculos['Tercer Puesto'].fecha_ejecucion.strftime('%d/%m/%Y %I:%M %p') }}
+
+                        </small>
+
+                        {% endif %}
+                    </button>
+
+                    {% else %}
+
+                    <a href="{{ url_for('validar_clasificados_tercer_puesto_admin') }}" class="btn btn-warning btn-lg"
+                        onclick="return confirm('¿Desea ejecutar el cálculo?')">
+
+                        Ejecutar
+
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FINALES -->
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card shadow-lg border-warning h-100">
+
+                <div class="card-header bg-warning">
+
+                    <h5 class="mb-0">
+
+                        ⚽ Clasificados a Finales
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p>
+
+                        Valida los equipos clasificados
+                        a Finales y otorga:
+
+                    </p>
+
+                    <ul>
+
+                        <li>
+                            5 puntos por cada equipo acertado.
+                        </li>
+
+                        <li>
+                            Máximo 10 puntos por partido.
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="card-footer text-center">
+
+                    {% if calculos.get('Final') and calculos['Final'].ejecutado %}
+
+                    <button class="btn btn-secondary btn-lg" disabled>
+
+                        ✅ Ejecutado
+
+                        {% if calculos['Final'].fecha_ejecucion %}
+
+                        <br>
+
+                        <small>
+
+                            {{ calculos['Final'].fecha_ejecucion.strftime('%d/%m/%Y %I:%M %p') }}
+
+                        </small>
+                        {% endif %}
+                    </button>
+
+                    {% else %}
+
+                    <a href="{{ url_for('validar_clasificados_final_admin') }}" class="btn btn-warning btn-lg"
+                        onclick="return confirm('¿Desea ejecutar el cálculo?')">
+
+                        Ejecutar
+
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
 
     </div>
 

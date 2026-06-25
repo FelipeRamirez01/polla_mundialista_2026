@@ -4,6 +4,7 @@ from app import app
 from extensions import db
 from models.partido import Partido
 from models.prediccion import Prediccion
+from models.partido_eliminacion import PartidoEliminacion
 
 
 @app.route('/usuario/prediccion')
@@ -20,6 +21,53 @@ def vista_usuario1():
         partidos=partidos,
         predicciones=predicciones_usuario
     )
+
+@app.route('/usuario/continuar_predicciones')
+@login_required
+def continuar_predicciones():
+
+    
+    fases = [
+        ("Dieciseisavos", 16, "Dieciseisavos"),
+        ("Octavos", 8, "Octavos"),
+        ("Cuartos", 4, "Cuartos"),
+        ("Semifinales", 2, "Semifinales"),
+        ("Tercer Puesto", 1, "Tercer Puesto"),
+        ("Final", 1, "Final"),
+    ]
+
+    siguiente = None
+
+    for nombre, cantidad, ruta in fases:
+
+        total = PartidoEliminacion.query.filter_by(
+            usuario_id=current_user.id,
+            fase=nombre
+        ).count()
+
+        
+
+        if total < cantidad:
+
+            siguiente = {
+                "nombre": nombre,
+                "ruta": ruta
+            }
+
+            break
+
+        #if total < cantidad:
+         #   return redirect(url_for(ruta))
+
+    flash(
+        'Ya completó todas las predicciones de las fases finales.',
+        'success'
+    )
+
+    return render_template(
+    "usuario/predicciones.html",
+    siguiente=siguiente
+)
 
 
 @app.route('/guia-pdf')
@@ -59,11 +107,44 @@ def prediccioness():
         if partido.grupo in grupos:
             grupos[partido.grupo].append(partido)
 
+    fases = [
+        ("Dieciseisavos", 16, "Dieciseisavos"),
+        ("Octavos", 8, "Octavos"),
+        ("Cuartos", 4, "Cuartos"),
+        ("Semifinales", 2, "Semifinales"),
+        ("Tercer Puesto", 1, "Tercer Puesto"),
+        ("Final", 1, "Final"),
+    ]
+
+    siguiente = None
+
+    for nombre, cantidad, ruta in fases:
+
+        total = PartidoEliminacion.query.filter_by(
+            usuario_id=current_user.id,
+            fase=nombre
+        ).count()
+
+        print(f"Fase: {nombre}, Total: {total}, Cantidad: {cantidad}")
+
+        
+
+        if total < cantidad:
+
+            siguiente = {
+                "nombre": nombre,
+                "ruta": ruta
+            }
+
+            break
+
+
     return render_template(
 
         'usuario/predicciones.html',
 
-        grupos=grupos
+        grupos=grupos,
+        siguiente=siguiente
     )
 
 

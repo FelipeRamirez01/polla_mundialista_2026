@@ -20,8 +20,10 @@
 
         <div class="card-body">
 
-            <form method="POST" action="{{ url_for('guardar_tercer_puesto') }}">
+            <form method="POST" action="{{ url_for('guardar_eliminatoria') }}">
 
+                <input type="hidden" name="fase" value="Tercer Puesto">
+                <input type="hidden" name="numero_partido" value="{{ partido.numero }}">
 
                 <input type="hidden" name="equipo_local" value="{{ partido.local }}">
 

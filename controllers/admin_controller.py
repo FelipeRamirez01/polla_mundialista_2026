@@ -11,6 +11,8 @@ from models.prediccion import Prediccion
 from models.partido import Partido
 from models.partido_eliminacion import PartidoEliminacion
 
+from models.control_calculo import ControlCalculo
+from datetime import datetime
 
 # VALIDAR ADMIN
 def validar_admin():
@@ -239,19 +241,19 @@ def actualizar_puntos_partido(partido_id):
                 ganador_predicho = 2
 
             # 3 puntos marcador exacto
-            #if (
-            #    pred.goles_local == partido.goles_local
-            #    and
-            #    pred.goles_visitante == partido.goles_visitante
-            #):
+            if (
+                pred.goles_local == partido.goles_local
+                and
+                pred.goles_visitante == partido.goles_visitante
+            ):
 
-            #    pred.puntos = 3
+               pred.puntos = 3
 
             # 1 punto ganador acertado
-            #elif ganador_predicho == ganador_real:
-            if ganador_predicho == ganador_real:
+            elif ganador_predicho == ganador_real:
+            #if ganador_predicho == ganador_real:
 
-                pred.puntos = 5
+                pred.puntos = 1
 
             # 0 puntos
             else:
@@ -370,7 +372,13 @@ def admin_tabla_posiciones():
         grupo_id=grupo_id
     )
 
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
+def ahora_colombia():
+    return datetime.now(
+        ZoneInfo("America/Bogota")
+    ).replace(tzinfo=None)
 
 @app.route('/admin/panel-calculos')
 @login_required
@@ -386,9 +394,15 @@ def panel_calculos():
         return redirect(
             url_for('login')
         )
+    
+    calculos = {
+        c.fase: c
+        for c in ControlCalculo.query.all()
+    }
 
     return render_template(
-        'admin/panel_calculos.html'
+        'admin/panel_calculos.html',
+        calculos=calculos
     )
 
 def validar_clasificados_dieciseisavos():
@@ -433,6 +447,51 @@ def validar_clasificados_dieciseisavos():
     db.session.commit()
 
 
+def validar_clasificados_fase(numero_inicio,numero_fin,fase):
+
+
+    # Equipos reales clasificados a la fase
+    partidos_reales = Partido.query.filter(
+        Partido.numero_partido.between(
+            numero_inicio,
+            numero_fin
+        )
+    ).all()
+
+    equipos_reales = set()
+
+    for partido in partidos_reales:
+
+        equipos_reales.add(
+            partido.equipo_local
+        )
+
+        equipos_reales.add(
+            partido.equipo_visitante
+        )
+
+    # Predicciones usuarios
+    predicciones = PartidoEliminacion.query.filter_by(
+        fase=fase
+    ).all()
+
+    for prediccion in predicciones:
+
+        puntos = 0
+
+        if prediccion.equipo_local in equipos_reales:
+            puntos += 5
+
+        if prediccion.equipo_visitante in equipos_reales:
+            puntos += 5
+
+        prediccion.puntos = puntos
+
+    db.session.commit()
+    
+
+
+
 @app.route('/admin/validar-clasificados-dieciseisavos')
 @login_required
 def validar_clasificados_dieciseisavos_admin():
@@ -445,8 +504,39 @@ def validar_clasificados_dieciseisavos_admin():
         )
 
         return redirect(url_for('login'))
+    
 
-    validar_clasificados_dieciseisavos()
+    control = ControlCalculo.query.filter_by(
+        fase='Dieciseisavos'
+    ).first()
+
+    if control and control.ejecutado:
+
+        flash(
+            'Este cálculo ya fue ejecutado.',
+            'warning'
+        )
+
+        return redirect(
+            url_for('panel_calculos')
+        )
+
+    validar_clasificados_fase(73,88,'Dieciseisavos')
+
+
+    if not control:
+
+        control = ControlCalculo(
+            fase='Dieciseisavos'
+        )
+
+        db.session.add(control)
+
+    control.ejecutado = True
+    control.fecha_ejecucion = ahora_colombia()
+
+    db.session.commit()
+
 
     flash(
         'Puntos por clasificados a Dieciseisavos actualizados correctamente.',
@@ -454,5 +544,270 @@ def validar_clasificados_dieciseisavos_admin():
     )
 
     return redirect(
-        url_for('dashboard_admin')
+        url_for('panel_calculos')
     )
+
+@app.route('/admin/validar-clasificados-octavos')
+@login_required
+def validar_clasificados_octavos_admin():
+
+    if current_user.rol.nombre != 'Administrador':
+
+        flash(
+            'No tiene permisos para acceder.',
+            'danger'
+        )
+
+        return redirect(url_for('login'))
+    
+    control = ControlCalculo.query.filter_by(
+        fase='Octavos'
+    ).first()
+
+    if control and control.ejecutado:
+
+        flash(
+            'Este cálculo ya fue ejecutado.',
+            'warning'
+        )
+
+        return redirect(
+            url_for('panel_calculos')
+        )
+
+
+    validar_clasificados_fase(89,96,'Octavos')
+
+    if not control:
+
+        control = ControlCalculo(
+            fase='Octavos'
+        )
+
+        db.session.add(control)
+
+    control.ejecutado = True
+    control.fecha_ejecucion = ahora_colombia()
+
+    db.session.commit()
+
+    flash(
+        'Puntos por clasificados a Octavos actualizados correctamente.',
+        'success'
+    )
+
+    return redirect(
+        url_for('panel_calculos')
+    )
+
+
+@app.route('/admin/validar-clasificados-cuartos')
+@login_required
+def validar_clasificados_cuartos_admin():
+
+    if current_user.rol.nombre != 'Administrador':
+
+        flash(
+            'No tiene permisos para acceder.',
+            'danger'
+        )
+
+        return redirect(url_for('login'))
+
+    control = ControlCalculo.query.filter_by(
+        fase='Cuartos'
+    ).first()
+
+    if control and control.ejecutado:
+
+        flash(
+            'Este cálculo ya fue ejecutado.',
+            'warning'
+        )
+
+        return redirect(
+            url_for('panel_calculos')
+        )
+
+    validar_clasificados_fase(97,100,'Cuartos')
+
+    if not control:
+
+        control = ControlCalculo(
+            fase='Cuartos'
+        )
+
+        db.session.add(control)
+
+    control.ejecutado = True
+    control.fecha_ejecucion = ahora_colombia()
+
+    db.session.commit()
+
+    flash(
+        'Puntos por clasificados a Cuartos actualizados correctamente.',
+        'success'
+    )
+
+    return redirect(
+        url_for('panel_calculos')
+    )
+
+@app.route('/admin/validar-clasificados-semis')
+@login_required
+def validar_clasificados_semis_admin():
+
+    if current_user.rol.nombre != 'Administrador':
+
+        flash(
+            'No tiene permisos para acceder.',
+            'danger'
+        )
+
+        return redirect(url_for('login'))
+
+    control = ControlCalculo.query.filter_by(
+        fase='Semifinal'
+    ).first()
+
+    if control and control.ejecutado:
+
+        flash(
+            'Este cálculo ya fue ejecutado.',
+            'warning'
+        )
+
+        return redirect(
+            url_for('panel_calculos')
+        )
+
+    validar_clasificados_fase(101,102,'Semifinal')
+
+    if not control:
+
+        control = ControlCalculo(
+            fase='Semifinal'
+        )
+
+        db.session.add(control)
+
+    control.ejecutado = True
+    control.fecha_ejecucion = ahora_colombia()
+
+    db.session.commit()
+
+    flash(
+        'Puntos por clasificados a Semis actualizados correctamente.',
+        'success'
+    )
+
+    return redirect(
+        url_for('panel_calculos')
+    )
+
+
+@app.route('/admin/validar-clasificados-tercer-puesto')
+@login_required
+def validar_clasificados_tercer_puesto_admin():
+
+    if current_user.rol.nombre != 'Administrador':
+
+        flash(
+            'No tiene permisos para acceder.',
+            'danger'
+        )
+
+        return redirect(url_for('login'))
+    
+    control = ControlCalculo.query.filter_by(
+        fase='Tercer Puesto'
+    ).first()
+
+    if control and control.ejecutado:
+
+        flash(
+            'Este cálculo ya fue ejecutado.',
+            'warning'
+        )
+
+        return redirect(
+            url_for('panel_calculos')
+        )
+
+
+    validar_clasificados_fase(103,103,'Tercer Puesto')
+
+    if not control:
+
+        control = ControlCalculo(
+            fase='Tercer Puesto'
+        )
+
+        db.session.add(control)
+
+    control.ejecutado = True
+    control.fecha_ejecucion = ahora_colombia()
+
+    db.session.commit()
+
+    flash(
+        'Puntos por clasificados a Tercer Puesto actualizados correctamente.',
+        'success'
+    )
+
+    return redirect(
+        url_for('panel_calculos')
+    )
+
+@app.route('/admin/validar-clasificados-final')
+@login_required
+def validar_clasificados_final_admin():
+
+    if current_user.rol.nombre != 'Administrador':
+
+        flash(
+            'No tiene permisos para acceder.',
+            'danger'
+        )
+
+        return redirect(url_for('login'))
+
+    control = ControlCalculo.query.filter_by(
+        fase='Final'
+    ).first()
+
+    if control and control.ejecutado:
+
+        flash(
+            'Este cálculo ya fue ejecutado.',
+            'warning'
+        )
+
+        return redirect(
+            url_for('panel_calculos')
+        )
+
+    validar_clasificados_fase(104,104,'Final')
+
+    if not control:
+
+        control = ControlCalculo(
+            fase='Final'
+        )
+
+        db.session.add(control)
+    
+    control.ejecutado = True
+    control.fecha_ejecucion = ahora_colombia()
+
+    db.session.commit()
+
+    flash(
+        'Puntos por clasificados a Final actualizados correctamente.',
+        'success'
+    )
+
+    return redirect(
+        url_for('panel_calculos')
+    )
+

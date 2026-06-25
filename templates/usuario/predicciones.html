@@ -28,170 +28,98 @@
 
         {% for grupo, partidos_grupo in grupos.items() %}
 
-            {% set ns = namespace(mostrar=false) %}
+        {% set ns = namespace(mostrar=false) %}
 
-            {% for partido in partidos_grupo %}
-                {% if partido.id not in predicciones_ids %}
-                    {% set ns.mostrar = true %}
-                {% endif %}
-            {% endfor %}
+        {% for partido in partidos_grupo %}
+        {% if partido.id not in predicciones_ids %}
+        {% set ns.mostrar = true %}
+        {% endif %}
+        {% endfor %}
 
-            {% if ns.mostrar %}
+        {% if ns.mostrar %}
 
-            <div class="accordion-item border-0 shadow-lg mb-4 rounded-4 overflow-hidden">
+        <div class="accordion-item border-0 shadow-lg mb-4 rounded-4 overflow-hidden">
 
-                <!-- CABECERA -->
-                <h2 class="accordion-header"
-                    id="heading{{ grupo }}">
+            <!-- CABECERA -->
+            <h2 class="accordion-header" id="heading{{ grupo }}">
 
-                    <button class="accordion-button fw-bold fs-5"
+                <button class="accordion-button fw-bold fs-5" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapse{{ grupo }}" aria-expanded="true">
 
-                            type="button"
+                    <i class="bi bi-flag-fill text-primary me-3"></i>
 
-                            data-bs-toggle="collapse"
+                    Grupo {{ grupo }}
 
-                            data-bs-target="#collapse{{ grupo }}"
+                </button>
 
-                            aria-expanded="true">
+            </h2>
 
-                        <i class="bi bi-flag-fill text-primary me-3"></i>
+            <!-- CONTENIDO -->
+            <div id="collapse{{ grupo }}" class="accordion-collapse collapse show" data-bs-parent="#accordionGrupos">
 
-                        Grupo {{ grupo }}
+                <div class="accordion-body bg-light p-4">
 
-                    </button>
+                    <form method="POST" action="{{ url_for('guardar_predicciones_grupo') }}">
 
-                </h2>
+                        <input type="hidden" name="grupo" value="{{ grupo }}">
 
-                <!-- CONTENIDO -->
-                <div id="collapse{{ grupo }}"
-                     class="accordion-collapse collapse show"
-                     data-bs-parent="#accordionGrupos">
+                        {% for partido in partidos_grupo %}
 
-                    <div class="accordion-body bg-light p-4">
+                        {% if partido.id not in predicciones_ids %}
 
-                        <form method="POST"
-                              action="{{ url_for('guardar_predicciones_grupo') }}">
+                        <div class="card border-0 shadow-sm rounded-4 mb-4">
 
-                            <input type="hidden"
-                                   name="grupo"
-                                   value="{{ grupo }}">
+                            <div class="card-body p-4">
 
-                            {% for partido in partidos_grupo %}
+                                <!-- FECHA -->
+                                <div class="text-end mb-3">
 
-                                {% if partido.id not in predicciones_ids %}
+                                    <span class="badge bg-secondary">
 
-                                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                                        <i class="bi bi-calendar-event"></i>
 
-                                    <div class="card-body p-4">
+                                        {{ partido.fecha.strftime('%d/%m/%Y %H:%M') }}
 
-                                        <!-- FECHA -->
-                                        <div class="text-end mb-3">
+                                    </span>
 
-                                            <span class="badge bg-secondary">
+                                </div>
 
-                                                <i class="bi bi-calendar-event"></i>
+                                <!-- EQUIPOS -->
+                                <div class="row align-items-center text-center mb-4">
 
-                                                {{ partido.fecha.strftime('%d/%m/%Y %H:%M') }}
+                                    <div class="col-md-5">
 
-                                            </span>
+                                        <div class="p-3 rounded-4 bg-white shadow-sm">
 
-                                        </div>
+                                            <h4 class="fw-bold mb-0">
 
-                                        <!-- EQUIPOS -->
-                                        <div class="row align-items-center text-center mb-4">
+                                                {{ partido.equipo_local }}
 
-                                            <div class="col-md-5">
-
-                                                <div class="p-3 rounded-4 bg-white shadow-sm">
-
-                                                    <h4 class="fw-bold mb-0">
-
-                                                        {{ partido.equipo_local }}
-
-                                                    </h4>
-
-                                                </div>
-
-                                            </div>
-
-                                            <div class="col-md-2">
-
-                                                <div class="fw-bold fs-2 text-primary">
-
-                                                    VS
-
-                                                </div>
-
-                                            </div>
-
-                                            <div class="col-md-5">
-
-                                                <div class="p-3 rounded-4 bg-white shadow-sm">
-
-                                                    <h4 class="fw-bold mb-0">
-
-                                                        {{ partido.equipo_visitante }}
-
-                                                    </h4>
-
-                                                </div>
-
-                                            </div>
+                                            </h4>
 
                                         </div>
 
-                                        <!-- MARCADOR -->
-                                        <div class="row justify-content-center align-items-center">
+                                    </div>
 
-                                            <div class="col-md-3 mb-3">
+                                    <div class="col-md-2">
 
-                                                <label class="form-label fw-semibold">
+                                        <div class="fw-bold fs-2 text-primary">
 
-                                                    {{ partido.equipo_local }}
+                                            VS
 
-                                                </label>
+                                        </div>
 
-                                                <input type="number"
+                                    </div>
 
-                                                       min="0"
+                                    <div class="col-md-5">
 
-                                                       required
+                                        <div class="p-3 rounded-4 bg-white shadow-sm">
 
-                                                       class="form-control form-control-lg text-center rounded-4"
+                                            <h4 class="fw-bold mb-0">
 
-                                                       name="goles_local_{{ partido.id }}">
+                                                {{ partido.equipo_visitante }}
 
-                                            </div>
-
-                                            <div class="col-md-1 text-center mb-3">
-
-                                                <span class="fw-bold fs-2 text-secondary">
-
-                                                    -
-
-                                                </span>
-
-                                            </div>
-
-                                            <div class="col-md-3 mb-3">
-
-                                                <label class="form-label fw-semibold">
-
-                                                    {{ partido.equipo_visitante }}
-
-                                                </label>
-
-                                                <input type="number"
-
-                                                       min="0"
-
-                                                       required
-
-                                                       class="form-control form-control-lg text-center rounded-4"
-
-                                                       name="goles_visitante_{{ partido.id }}">
-
-                                            </div>
+                                            </h4>
 
                                         </div>
 
@@ -199,32 +127,78 @@
 
                                 </div>
 
-                                {% endif %}
+                                <!-- MARCADOR -->
+                                <div class="row justify-content-center align-items-center">
 
-                            {% endfor %}
+                                    <div class="col-md-3 mb-3">
 
-                            <div class="text-center mt-4">
+                                        <label class="form-label fw-semibold">
 
-                                <button type="submit"
-                                        class="btn btn-success btn-lg px-5 rounded-4 shadow">
+                                            {{ partido.equipo_local }}
 
-                                    <i class="bi bi-save-fill"></i>
+                                        </label>
 
-                                    Guardar Grupo {{ grupo }}
+                                        <input type="number" min="0" required
+                                            class="form-control form-control-lg text-center rounded-4"
+                                            name="goles_local_{{ partido.id }}">
 
-                                </button>
+                                    </div>
+
+                                    <div class="col-md-1 text-center mb-3">
+
+                                        <span class="fw-bold fs-2 text-secondary">
+
+                                            -
+
+                                        </span>
+
+                                    </div>
+
+                                    <div class="col-md-3 mb-3">
+
+                                        <label class="form-label fw-semibold">
+
+                                            {{ partido.equipo_visitante }}
+
+                                        </label>
+
+                                        <input type="number" min="0" required
+                                            class="form-control form-control-lg text-center rounded-4"
+                                            name="goles_visitante_{{ partido.id }}">
+
+                                    </div>
+
+                                </div>
 
                             </div>
 
-                        </form>
+                        </div>
 
-                    </div>
+                        {% endif %}
+
+                        {% endfor %}
+
+                        <div class="text-center mt-4">
+
+                            <button type="submit" class="btn btn-success btn-lg px-5 rounded-4 shadow">
+
+                                <i class="bi bi-save-fill"></i>
+
+                                Guardar Grupo {{ grupo }}
+
+                            </button>
+
+                        </div>
+
+                    </form>
 
                 </div>
 
             </div>
 
-            {% endif %}
+        </div>
+
+        {% endif %}
 
         {% endfor %}
 
@@ -254,14 +228,28 @@
 
     <div class="text-center mt-4">
 
-        <a href="{{ url_for('clasificacion_16') }}"
-           class="btn btn-primary btn-lg shadow-lg px-5">
 
-            <i class="bi bi-arrow-right-circle-fill"></i>
+            {% if siguiente %}
 
-            Ver Clasificados a Dieciseisavos
+            <a href="{{ url_for(siguiente.ruta) }}" class="btn btn-primary btn-lg shadow-lg">
 
-        </a>
+                <i class="bi bi-arrow-right-circle-fill"></i>
+
+                Continuar en {{ siguiente.nombre }}
+
+            </a>
+
+            {% else %}
+
+            <button class="btn btn-success btn-lg" disabled>
+
+                ✅ Todas las fases completadas
+
+            </button>
+
+            {% endif %}
+
+    
 
     </div>
 

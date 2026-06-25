@@ -29,7 +29,9 @@
 
                 <div class="card-body">
 
-                    <form method="POST" action="{{ url_for('guardar_dieciseisavos') }}">
+                    <form method="POST" action="{{ url_for('guardar_eliminatoria') }}">
+
+                        <input type="hidden" name="fase" value="Dieciseisavos">
 
                         <input type="hidden" name="numero_partido" value="{{ partido.numero }}">
 
