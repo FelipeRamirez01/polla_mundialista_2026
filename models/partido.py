@@ -22,4 +22,6 @@ class Partido(db.Model):
 
     fecha = db.Column(db.DateTime)
 
+    ganador = db.Column(db.String(100))
+
     finalizado = db.Column(db.Boolean, default=False)

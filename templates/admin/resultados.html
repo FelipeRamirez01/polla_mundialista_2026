@@ -2,19 +2,29 @@
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container mt-4 mb-5">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h2 class="text-primary">
+        <div>
 
-            <i class="bi bi-trophy-fill"></i>
+            <h2 class="fw-bold text-primary">
 
-            Actualizar Resultados
+                <i class="bi bi-trophy-fill"></i>
 
-        </h2>
+                Actualizar Resultados
 
-        <span class="badge bg-dark fs-6">
+            </h2>
+
+            <small class="text-muted">
+
+                Registre los resultados oficiales de cada partido.
+
+            </small>
+
+        </div>
+
+        <span class="badge bg-dark fs-5">
 
             {{ partidos|length }} partidos
 
@@ -22,183 +32,28 @@
 
     </div>
 
-    <div class="card shadow">
+    <div class="card shadow-sm mb-4">
 
         <div class="card-body">
 
-            <div class="table-responsive">
+            <div class="row">
 
-                <table class="table table-hover align-middle">
+                <div class="col-md-8">
 
-                    <thead class="table-dark">
+                    <input type="text" id="buscarPartido" class="form-control form-control-lg"
+                        placeholder="🔎 Buscar por número de partido o nombre del equipo...">
 
-                        <tr>
+                </div>
 
-                            <th>Grupo</th>
+                <div class="col-md-4">
 
-                            <th>Partido</th>
+                    <button type="button" id="limpiarBusqueda" class="btn btn-outline-secondary w-100">
 
-                            <th>Fecha</th>
+                        Limpiar filtro
 
-                            <th>Resultado</th>
+                    </button>
 
-                            <th>Estado</th>
-
-                            <th width="250">
-
-                                Acción
-
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for partido in partidos %}
-
-                        <tr>
-
-                            <td>
-
-                                <span class="badge bg-primary">
-
-                                    {{ partido.grupo }}
-
-                                </span>
-
-                            </td>
-
-                            <td>
-
-                                <strong>
-
-                                    {{ partido.equipo_local }}
-
-                                </strong>
-
-                                vs
-
-                                <strong>
-
-                                    {{ partido.equipo_visitante }}
-
-                                </strong>
-
-                            </td>
-
-                            <td>
-
-                                {{ partido.fecha.strftime('%d/%m/%Y %H:%M') }}
-
-                            </td>
-
-                            <td>
-
-                                {% if partido.finalizado %}
-
-                                    <span class="badge bg-success fs-6">
-
-                                        {{ partido.goles_local }}
-
-                                        -
-
-                                        {{ partido.goles_visitante }}
-
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="badge bg-warning text-dark">
-
-                                        Pendiente
-
-                                    </span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                {% if partido.finalizado %}
-
-                                    <span class="badge bg-success">
-
-                                        Finalizado
-
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="badge bg-danger">
-
-                                        Sin registrar
-
-                                    </span>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-
-                                <form method="POST"
-                                      action="{{ url_for('guardar_resultado') }}">
-
-                                    <input type="hidden"
-                                           name="partido_id"
-                                           value="{{ partido.id }}">
-
-                                    <div class="row">
-
-                                        <div class="col">
-
-                                            <input type="number"
-                                                   name="goles_local"
-                                                   class="form-control"
-                                                   min="0"
-                                                   value="{{ partido.goles_local if partido.goles_local is not none else '' }}"
-                                                   required>
-
-                                        </div>
-
-                                        <div class="col">
-
-                                            <input type="number"
-                                                   name="goles_visitante"
-                                                   class="form-control"
-                                                   min="0"
-                                                   value="{{ partido.goles_visitante if partido.goles_visitante is not none else '' }}"
-                                                   required>
-
-                                        </div>
-
-                                        <div class="col-auto">
-
-                                            <button
-                                                class="btn btn-success">
-
-                                                Guardar
-
-                                            </button>
-
-                                        </div>
-
-                                    </div>
-
-                                </form>
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
+                </div>
 
             </div>
 
@@ -206,6 +61,342 @@
 
     </div>
 
-</div>
 
+    <div class="row">
+
+        {% for partido in partidos %}
+
+        <div class="col-xl-6 col-12 mb-4 tarjeta-partido" data-partido="{{ partido.numero_partido }}"
+            data-local="{{ partido.equipo_local|lower }}" data-visitante="{{ partido.equipo_visitante|lower }}">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-header d-flex justify-content-between align-items-center
+                {% if partido.numero_partido >= 73 %}
+                    bg-warning
+                {% else %}
+                    bg-primary text-white
+                {% endif %}">
+
+                    <div>
+
+                        <strong>
+
+                            {% if partido.grupo %}
+
+                               Grupo: {{ partido.grupo }}
+
+                            {% else %}
+
+                                Fase: {{ partido.fase }}
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+                    <div>
+
+                        Partido {{ partido.numero_partido }}
+
+                    </div>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="text-center mb-3">
+
+                        <small class="text-muted">
+
+                            {{ partido.fecha.strftime('%d/%m/%Y %H:%M') }}
+
+                        </small>
+
+                    </div>
+
+
+                    <form method="POST" action="{{ url_for('guardar_resultado') }}" class="resultado-form">
+
+                        <input type="hidden" name="numero_partido" value="{{ partido.numero_partido }}">
+
+                        <div class="row align-items-center text-center">
+
+                            <div class="col-5">
+
+                                <h5 class="fw-bold">
+
+                                    {{ partido.equipo_local }}
+
+                                </h5>
+
+                            </div>
+
+                            <div class="col-2">
+
+                                <span class="badge bg-dark">
+
+                                    VS
+
+                                </span>
+
+                            </div>
+
+                            <div class="col-5">
+
+                                <h5 class="fw-bold">
+
+                                    {{ partido.equipo_visitante }}
+
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mt-4 align-items-center">
+
+                            <div class="col">
+
+                                <input type="number" min="0" required
+                                    class="form-control form-control-lg text-center goles-local" name="goles_local"
+                                    value="{{ partido.goles_local if partido.goles_local is not none else '' }}">
+
+                            </div>
+
+                            <div class="col-auto">
+
+                                <h3>
+
+                                    -
+
+                                </h3>
+
+                            </div>
+
+                            <div class="col">
+
+                                <input type="number" min="0" required
+                                    class="form-control form-control-lg text-center goles-visitante"
+                                    name="goles_visitante"
+                                    value="{{ partido.goles_visitante if partido.goles_visitante is not none else '' }}">
+
+                            </div>
+
+                        </div>
+
+
+                        {% if partido.numero_partido >= 73 %}
+
+                        {% if partido.finalizado and partido.goles_local == partido.goles_visitante %}
+
+                        <div class="mt-4">
+
+                            <label class="fw-bold mb-2">
+                                🏆 Clasificado
+                            </label>
+
+                            <div class="alert alert-success mb-0">
+
+                                <i class="bi bi-trophy-fill"></i>
+
+                                Clasificó:
+
+                                <strong>{{ partido.ganador }}</strong>
+
+                            </div>
+
+                        </div>
+
+                        {% else %}
+
+                        <div class="ganador-container mt-4" style="display:none;">
+
+                            <label class="fw-bold mb-2">
+
+                                🏆 ¿Quién clasificó?
+
+                            </label>
+
+                            <select class="form-select" name="ganador">
+
+                                <option value="">
+
+                                    Seleccione...
+
+                                </option>
+
+                                <option value="{{ partido.equipo_local }}">
+
+                                    {{ partido.equipo_local }}
+
+                                </option>
+
+                                <option value="{{ partido.equipo_visitante }}">
+
+                                    {{ partido.equipo_visitante }}
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        {% endif %}
+
+                        {% endif %}
+
+
+                        <div class="text-center mt-4">
+
+                            <button class="btn btn-success btn-lg px-5">
+
+                                <i class="bi bi-save-fill"></i>
+
+                                Guardar Resultado
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        document.querySelectorAll(".resultado-form").forEach(function (form) {
+
+            const numero = parseInt(
+                form.querySelector("[name='numero_partido']").value
+            );
+
+            if (numero < 73)
+                return;
+
+            const golesLocal = form.querySelector(".goles-local");
+            const golesVisitante = form.querySelector(".goles-visitante");
+            const contenedor = form.querySelector(".ganador-container");
+
+            if (!contenedor)
+                return;
+
+            const select = contenedor.querySelector("select");
+
+            function actualizar() {
+
+                const gl = golesLocal.value.trim();
+                const gv = golesVisitante.value.trim();
+
+                if (gl === "" || gv === "") {
+
+                    contenedor.style.display = "none";
+                    select.required = false;
+                    return;
+
+                }
+
+                if (parseInt(gl) === parseInt(gv)) {
+
+                    contenedor.style.display = "block";
+                    select.required = true;
+
+                } else {
+
+                    contenedor.style.display = "none";
+                    select.required = false;
+                    select.value = "";
+
+                }
+
+            }
+
+            golesLocal.addEventListener("input", actualizar);
+            golesVisitante.addEventListener("input", actualizar);
+
+            actualizar();
+
+            form.addEventListener("submit", function (e) {
+
+                if (parseInt(golesLocal.value) !== parseInt(golesVisitante.value))
+                    return;
+
+                if (select.value === "") {
+
+                    e.preventDefault();
+
+                    alert("Debe seleccionar quién clasificó.");
+
+                    select.focus();
+
+                }
+
+            });
+
+        });
+
+    });
+
+</script>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const buscador = document.getElementById("buscarPartido");
+        const limpiar = document.getElementById("limpiarBusqueda");
+
+        buscador.addEventListener("keyup", filtrar);
+
+        limpiar.addEventListener("click", function () {
+
+            buscador.value = "";
+            filtrar();
+
+        });
+
+        function filtrar() {
+
+            const texto = buscador.value.toLowerCase().trim();
+
+            document.querySelectorAll(".tarjeta-partido").forEach(function (card) {
+
+                const numero = card.dataset.partido;
+                const local = card.dataset.local;
+                const visitante = card.dataset.visitante;
+
+                if (
+                    numero.includes(texto) ||
+                    local.includes(texto) ||
+                    visitante.includes(texto)
+                ) {
+
+                    card.style.display = "";
+
+                } else {
+
+                    card.style.display = "none";
+
+                }
+
+            });
+
+        }
+
+    });
+
+</script>
 {% endblock %}

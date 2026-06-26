@@ -216,15 +216,22 @@ def actualizar_puntos_partido(partido_id):
     # FASES ELIMINATORIAS
     # ==========================================
 
-    if partido.numero_partido:
+    if partido.numero_partido >= 73:  # Dieciseisavos o posteriores
 
-        ganador_real = 0
 
+        ganador_real = partido.ganador
+        # Equipo ganador real
         if partido.goles_local > partido.goles_visitante:
-            ganador_real = 1
+
+            equipo_ganador_real = partido.equipo_local
 
         elif partido.goles_visitante > partido.goles_local:
-            ganador_real = 2
+
+            equipo_ganador_real = partido.equipo_visitante
+
+        else:
+
+            equipo_ganador_real = None   # Empate (definido por penales)
 
         predicciones_eliminacion = PartidoEliminacion.query.filter_by(
             numero_partido=partido.numero_partido
@@ -232,36 +239,65 @@ def actualizar_puntos_partido(partido_id):
 
         for pred in predicciones_eliminacion:
 
-            ganador_predicho = 0
-
+            # Equipo ganador predicho
             if pred.goles_local > pred.goles_visitante:
-                ganador_predicho = 1
+
+                equipo_ganador_predicho = pred.equipo_local
 
             elif pred.goles_visitante > pred.goles_local:
-                ganador_predicho = 2
 
-            # 3 puntos marcador exacto
+                equipo_ganador_predicho = pred.equipo_visitante
+
+            else:
+
+                # Si el usuario predijo empate, debe escoger el ganador
+                equipo_ganador_predicho = pred.ganador
+
+            # 3 puntos por marcador exacto y equipos correctos
             if (
-                pred.goles_local == partido.goles_local
-                and
-                pred.goles_visitante == partido.goles_visitante
+
+                (
+                    pred.equipo_local == partido.equipo_local
+                    and
+                    pred.equipo_visitante == partido.equipo_visitante
+                    and
+                    pred.goles_local == partido.goles_local
+                    and
+                    pred.goles_visitante == partido.goles_visitante
+                )
+
+                or
+
+                (
+                    pred.equipo_local == partido.equipo_visitante
+                    and
+                    pred.equipo_visitante == partido.equipo_local
+                    and
+                    pred.goles_local == partido.goles_visitante
+                    and
+                    pred.goles_visitante == partido.goles_local
+                )
+
             ):
 
-               pred.puntos = 3
+                pred.puntos = 3
 
-            # 1 punto ganador acertado
-            elif ganador_predicho == ganador_real:
-            #if ganador_predicho == ganador_real:
+            # 1 punto por acertar el equipo ganador
+            elif (
+                equipo_ganador_predicho
+                and
+                ganador_real
+                and
+                equipo_ganador_predicho == ganador_real
+            ):
 
                 pred.puntos = 1
 
-            # 0 puntos
             else:
 
                 pred.puntos = 0
 
     db.session.commit()
-
 
 @app.route('/admin/resultados')
 @login_required
@@ -289,7 +325,7 @@ def guardar_resultado():
         return redirect(url_for('dashboard'))
 
     partido = Partido.query.get_or_404(
-        request.form['partido_id']
+        request.form['numero_partido']
     )
 
     partido.goles_local = int(
@@ -302,6 +338,28 @@ def guardar_resultado():
 
     partido.finalizado = True
 
+    goles_local = int(request.form['goles_local'])
+    goles_visitante = int(request.form['goles_visitante'])
+
+    ganador = None
+
+    if partido.numero_partido >= 73 and goles_local == goles_visitante:
+
+        ganador = request.form.get('ganador')
+
+    elif goles_local > goles_visitante:
+
+        ganador = partido.equipo_local
+    
+    elif goles_local < goles_visitante:
+
+        ganador = partido.equipo_visitante
+    else:
+
+        ganador = None
+
+    partido.ganador = ganador
+    
     db.session.commit()
 
     actualizar_puntos_partido(
