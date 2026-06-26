@@ -811,3 +811,227 @@ def validar_clasificados_final_admin():
         url_for('panel_calculos')
     )
 
+# DASHBOARD USUARIO
+@app.route('/vista-finales')
+@login_required
+def vista_finales():
+    return render_template('usuario/etapas_finales.html')
+
+
+from collections import defaultdict
+from flask import request, render_template, abort
+from flask_login import login_required
+
+@app.route('/validacion-clasificados/<fase>')
+@login_required
+def validacion_clasificados(fase):
+
+    #if current_user.rol.nombre != "Administrador":
+     #   abort(403)
+
+    fases = {
+        "Dieciseisavos": (73, 88),
+        "Octavos": (89, 96),
+        "Cuartos": (97, 100),
+        "Semifinal": (101, 102),
+        "Tercer Puesto": (103, 103),
+        "Final": (104, 104)
+    }
+
+    if fase not in fases:
+        abort(404)
+
+    inicio, fin = fases[fase]
+
+    grupo_filtro = "Amigos Mundial"  # request.args.get("grupo", None)
+
+    # ============================
+    # EQUIPOS REALES CLASIFICADOS
+    # ============================
+
+    partidos_reales = Partido.query.filter(
+        Partido.numero_partido.between(inicio, fin)
+    ).order_by(
+        Partido.numero_partido
+    ).all()
+
+    equipos_reales = set()
+
+    for partido in partidos_reales:
+
+        equipos_reales.add(partido.equipo_local)
+        equipos_reales.add(partido.equipo_visitante)
+
+    # ============================
+    # USUARIOS
+    # ============================
+
+    usuarios_query = Usuario.query.join(
+        Grupo
+    )
+
+    if grupo_filtro:
+
+        usuarios_query = usuarios_query.filter(
+            Grupo.nombre == grupo_filtro
+        )
+
+    usuarios = usuarios_query.order_by(
+        Grupo.nombre,
+        Usuario.nombre
+    ).all()
+
+    datos = []
+
+    resumen = {
+        "10": 0,
+        "5": 0,
+        "0": 0
+    }
+
+    # ============================
+    # RECORRER USUARIOS
+    # ============================
+
+    for usuario in usuarios:
+
+        predicciones = PartidoEliminacion.query.filter(
+            PartidoEliminacion.usuario_id == usuario.id,
+            PartidoEliminacion.numero_partido.between(
+                inicio,
+                fin
+            )
+        ).order_by(
+            PartidoEliminacion.numero_partido
+        ).all()
+
+        detalle = []
+
+        total_puntos = 0
+
+        
+        for pred in predicciones:
+
+            partido_real = Partido.query.filter_by(
+                numero_partido=pred.numero_partido
+            ).first()
+
+            puntos_partido = 0
+
+            acierto_local = pred.equipo_local in equipos_reales
+            acierto_visitante = pred.equipo_visitante in equipos_reales
+
+            if acierto_local:
+                puntos_partido += 5
+
+            if acierto_visitante:
+                puntos_partido += 5
+
+            total_puntos += puntos_partido
+
+            detalle.append({
+
+                "numero": pred.numero_partido,
+
+                "pred_local": pred.equipo_local,
+                "pred_visitante": pred.equipo_visitante,
+
+                "real_local": partido_real.equipo_local if partido_real else "",
+                "real_visitante": partido_real.equipo_visitante if partido_real else "",
+
+                "acierto_local": acierto_local,
+                "acierto_visitante": acierto_visitante,
+
+                "puntos": puntos_partido
+
+            })
+
+
+
+        if total_puntos == 10:
+
+            resumen["10"] += 1
+
+        elif total_puntos == 5:
+
+            resumen["5"] += 1
+
+        else:
+
+            resumen["0"] += 1
+
+        datos.append({
+
+            "usuario": usuario,
+
+            "grupo": usuario.grupo.nombre,
+
+            "detalle": detalle,
+
+            "total": total_puntos
+
+        })
+
+    # ============================
+    # ORDENAR
+    # ============================
+
+    datos = sorted(
+
+        datos,
+
+        key=lambda x: (
+
+            x["grupo"],
+
+            -x["total"],
+
+            x["usuario"].nombre
+
+        )
+
+    )
+
+    # ============================
+    # AGRUPAR POR GRUPO
+    # ============================
+
+    grupos = defaultdict(list)
+
+    for item in datos:
+
+        grupos[item["grupo"]].append(item)
+
+    # ============================
+    # GRUPOS EXISTENTES
+    # ============================
+
+    lista_grupos = db.session.query(
+
+        Grupo.nombre
+
+    ).order_by(
+
+        Grupo.nombre
+
+    ).all()
+
+    lista_grupos = [g.nombre for g in lista_grupos]
+
+    return render_template(
+
+        "usuario/validacion_clasificados.html",
+
+        fase=fase,
+
+        grupos=grupos,
+
+        lista_grupos=lista_grupos,
+
+        grupo_filtro=grupo_filtro,
+
+        resumen=resumen,
+
+        equipos_reales=sorted(equipos_reales)
+
+    )

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="text-center mb-5">
+
+        <h2 class="fw-bold text-primary">
+
+            <i class="bi bi-send-check-fill"></i>
+
+            Solicitar Validación de Clasificados
+
+        </h2>
+
+        <p class="text-muted">
+
+            Seleccione la fase para enviar la solicitud de validación de clasificados.
+
+        </p>
+
+    </div>
+
+    <div class="row g-4">
+
+        {% set fases = [
+
+            ('Dieciseisavos', 'warning', '⚽'),
+            ('Octavos', 'primary', '🏆'),
+            ('Cuartos', 'success', '🥇'),
+            ('Semifinal', 'info', '🔥'),
+            ('Tercer Puesto', 'secondary', '🥉'),
+            ('Final', 'danger', '👑')
+
+        ] %}
+
+        {% for fase, color, icono in fases %}
+
+        <div class="col-md-6 col-lg-4">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-header bg-{{ color }} text-white">
+
+                    <h5 class="mb-0">
+
+                        {{ icono }} {{ fase }}
+
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p>
+
+                        Enviar la solicitud para validar los equipos clasificados correspondientes a la fase de <strong>{{ fase }}</strong>.
+
+                    </p>
+
+                </div>
+
+                <div class="card-footer bg-white">
+
+                    <a href="{{ url_for('validacion_clasificados', fase=fase) }}"
+                       class="btn btn-{{ color }} w-100"
+                       
+
+                        <i class="bi bi-send-fill"></i>
+
+                        Enviar solicitud
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,512 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5 mb-5">
+
+    <div class="text-center mb-4">
+
+        <h2 class="fw-bold text-primary">
+
+            <i class="bi bi-check2-circle"></i>
+
+            Validación Clasificados
+
+            {{ fase }}
+
+        </h2>
+
+    </div>
+
+
+    <!-- EQUIPOS CLASIFICADOS -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header bg-success text-white">
+
+            Equipos Clasificados
+
+        </div>
+
+        <div class="card-body">
+
+            {% for equipo in equipos_reales %}
+
+            <span class="badge bg-success me-2 mb-2 fs-6">
+
+                {{ equipo }}
+
+            </span>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- FILTRO -->
+
+    <form class="row mb-4">
+
+        <input type="hidden" name="fase" value="{{ fase }}">
+        <input type="hidden" name="grupo" value="Amigos Mundial">
+
+
+    </form>
+
+
+    <!-- GRUPOS -->
+
+    {% for grupo, usuarios in grupos.items() %}
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            Grupo {{ grupo }}
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row mb-4">
+
+                <div class="col-md-5">
+
+                    <input type="text" id="buscarUsuario" class="form-control" placeholder="🔍 Buscar usuario...">
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <select id="ordenarUsuarios" class="form-select">
+
+                        <option value="puntos">
+                            Ordenar por puntos
+                        </option>
+
+                        <option value="nombre">
+                            Ordenar por nombre
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-4 text-end">
+
+                    <span class="badge bg-primary fs-6">
+
+                        Usuarios visibles:
+                        <span id="contadorUsuarios">
+
+                            0
+
+                        </span>
+
+                    </span>
+
+                </div>
+
+            </div>
+            <div class="accordion" id="accordion{{ grupo|replace(' ','_') }}">
+
+                {% for item in usuarios %}
+
+                <div class="accordion-item usuario-item" data-nombre="{{ item.usuario.nombre|lower }}"
+                    data-puntos="{{ item.total }}">
+
+                    <!-- Encabezado -->
+                    <h2 class="accordion-header">
+
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#u{{ item.usuario.id }}">
+
+                            <div class="d-flex justify-content-between align-items-center w-100 me-3">
+
+                                <strong class="fs-5">
+
+                                    {{ item.usuario.nombre }}
+
+                                </strong>
+
+                                <span class="badge bg-success fs-6">
+
+                                    {{ item.total }} pts
+
+                                </span>
+
+                            </div>
+
+                        </button>
+
+                    </h2>
+
+                    <!-- Contenido -->
+                    <div id="u{{ item.usuario.id }}" class="accordion-collapse collapse"
+                        data-bs-parent="#accordion{{ grupo|replace(' ','_') }}">
+
+                        <div class="accordion-body">
+
+                            <!-- Resumen -->
+                            <div class="card border-0 bg-light shadow-sm mb-4">
+
+                                <div class="card-body">
+
+                                    <div class="row text-center">
+
+                                        <div class="col-md-4">
+
+                                            <h3 class="text-success mb-0">
+
+                                                {{ item.total }}
+
+                                            </h3>
+
+                                            <small class="text-muted">
+
+                                                Total puntos
+
+                                            </small>
+
+                                        </div>
+
+                                        <div class="col-md-4">
+
+                                            <h3 class="mb-0">
+
+                                                {{ item.detalle|length }}
+
+                                            </h3>
+
+                                            <small class="text-muted">
+
+                                                Partidos
+
+                                            </small>
+
+                                        </div>
+
+                                        <div class="col-md-4">
+
+                                            <h3 class="text-primary mb-0">
+
+                                                {{ (item.total/5)|int }}
+
+                                            </h3>
+
+                                            <small class="text-muted">
+
+                                                Equipos acertados
+
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <!-- Tabla -->
+                            <div class="table-responsive">
+
+                                <table class="table table-bordered table-hover align-middle">
+
+                                    <thead class="table-dark">
+
+                                        <tr>
+
+                                            <th>Partido</th>
+                                            <th>Predicción</th>
+                                            <th>Resultado Real</th>
+                                            <th class="text-center">Aciertos</th>
+                                            <th class="text-center">Puntos</th>
+
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+
+                                        {% for p in item.detalle %}
+
+                                        <tr>
+
+                                            <td class="text-center">
+
+                                                <strong>{{ p.numero }}</strong>
+
+                                            </td>
+
+                                            <td>
+
+                                                <div>
+
+                                                    {% if p.acierto_local %}
+                                                    <span class="badge bg-success">✔ {{ p.pred_local }}</span>
+                                                    {% else %}
+                                                    <span class="badge bg-danger">✖ {{ p.pred_local }}</span>
+                                                    {% endif %}
+
+                                                </div>
+
+                                                <div class="mt-2">
+
+                                                    {% if p.acierto_visitante %}
+                                                    <span class="badge bg-success">✔ {{ p.pred_visitante }}</span>
+                                                    {% else %}
+                                                    <span class="badge bg-danger">✖ {{ p.pred_visitante }}</span>
+                                                    {% endif %}
+
+                                                </div>
+
+                                            </td>
+
+                                            <td>
+
+                                                <span class="badge bg-primary">
+
+                                                    {{ p.real_local }}
+
+                                                </span>
+
+                                                <br>
+
+                                                <span class="badge bg-primary mt-2">
+
+                                                    {{ p.real_visitante }}
+
+                                                </span>
+
+                                            </td>
+
+                                            <td class="text-center">
+
+                                                {% if p.puntos == 10 %}
+
+                                                <span class="badge bg-success">
+
+                                                    2 / 2
+
+                                                </span>
+
+                                                {% elif p.puntos == 5 %}
+
+                                                <span class="badge bg-warning text-dark">
+
+                                                    1 / 2
+
+                                                </span>
+
+                                                {% else %}
+
+                                                <span class="badge bg-danger">
+
+                                                    0 / 2
+
+                                                </span>
+
+                                                {% endif %}
+
+                                            </td>
+
+                                            <td class="text-center">
+
+                                                <span class="badge
+                                    {% if p.puntos == 10 %}
+                                        bg-success
+                                    {% elif p.puntos == 5 %}
+                                        bg-warning text-dark
+                                    {% else %}
+                                        bg-danger
+                                    {% endif %} fs-6">
+
+                                                    ⭐ {{ p.puntos }}
+
+                                                </span>
+
+                                            </td>
+
+                                        </tr>
+
+                                        {% endfor %}
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        actualizarColores();
+
+        actualizarBarras();
+
+        actualizarContador();
+
+    });
+
+
+
+    function actualizarColores() {
+
+        document.querySelectorAll(".usuario-item").forEach(function (item) {
+
+            let puntos = parseInt(item.dataset.puntos);
+
+            let badge = item.querySelector(".badge-puntos");
+
+            if (puntos >= 10) {
+
+                badge.classList.add("bg-success");
+
+            }
+
+            else if (puntos >= 5) {
+
+                badge.classList.add("bg-warning", "text-dark");
+
+            }
+
+            else {
+
+                badge.classList.add("bg-danger");
+
+            }
+
+        });
+
+    }
+
+
+
+    function actualizarBarras() {
+
+        document.querySelectorAll(".progreso").forEach(function (barra) {
+
+            let puntos = parseInt(barra.dataset.puntos);
+
+            let porcentaje = (puntos / 10) * 100;
+
+            if (porcentaje > 100) {
+
+                porcentaje = 100;
+
+            }
+
+            barra.style.width = porcentaje + "%";
+
+            barra.innerHTML = porcentaje + "%";
+
+            if (puntos >= 10) {
+
+                barra.classList.add("bg-success");
+
+            }
+
+            else if (puntos >= 5) {
+
+                barra.classList.add("bg-warning");
+
+            }
+
+            else {
+
+                barra.classList.add("bg-danger");
+
+            }
+
+        });
+
+    }
+
+
+
+    document.getElementById("buscarUsuario").addEventListener("keyup", function () {
+
+        let texto = this.value.toLowerCase();
+
+        document.querySelectorAll(".usuario-item").forEach(function (item) {
+
+            let nombre = item.dataset.nombre;
+
+            item.style.display = nombre.includes(texto) ? "" : "none";
+
+        });
+
+        actualizarContador();
+
+    });
+
+
+
+    document.getElementById("ordenarUsuarios").addEventListener("change", function () {
+
+        document.querySelectorAll(".accordion").forEach(function (accordion) {
+
+            let items = [...accordion.querySelectorAll(".usuario-item")];
+
+            if (document.getElementById("ordenarUsuarios").value == "nombre") {
+
+                items.sort((a, b) =>
+
+                    a.dataset.nombre.localeCompare(b.dataset.nombre)
+
+                );
+
+            }
+
+            else {
+
+                items.sort((a, b) =>
+
+                    b.dataset.puntos - a.dataset.puntos
+
+                );
+
+            }
+
+            items.forEach(item => accordion.appendChild(item));
+
+        });
+
+    });
+
+
+
+    function actualizarContador() {
+
+        let visibles = document.querySelectorAll(".usuario-item:not([style*='display: none'])");
+
+        document.getElementById("contadorUsuarios").innerHTML = visibles.length;
+
+    }
+
+</script>
+
+{% endblock %}

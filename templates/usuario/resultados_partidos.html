@@ -34,8 +34,7 @@
 
                         {% for letra in ['A','B','C','D','E','F','G','H','I','J','K','L'] %}
 
-                        <option value="{{ letra }}"
-                            {% if grupo == letra %}selected{% endif %}>
+                        <option value="{{ letra }}" {% if grupo==letra %}selected{% endif %}>
 
                             Grupo {{ letra }}
 
@@ -53,10 +52,7 @@
                         Fecha
                     </label>
 
-                    <input type="date"
-                           name="fecha"
-                           value="{{ fecha }}"
-                           class="form-control">
+                    <input type="date" name="fecha" value="{{ fecha }}" class="form-control">
 
                 </div>
 
@@ -82,10 +78,8 @@
 
                     <h2 class="accordion-header">
 
-                        <button class="accordion-button collapsed"
-                                type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#partido{{ item.partido.id }}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#partido{{ item.partido.id }}">
 
                             <div class="w-100">
 
@@ -94,7 +88,11 @@
                                     <div class="col-md-6">
 
                                         <strong>
-                                            Grupo {{ item.partido.grupo }}
+                                            {% if item.partido.grupo %}
+                                            Grupo {{item.partido.grupo }}
+                                            {% else %}
+                                            Partido Número {{ item.partido.numero_partido }}
+                                            {% endif %}
                                         </strong>
 
                                         |
@@ -109,25 +107,26 @@
 
                                     <div class="col-md-2 text-center">
 
-                                        {% if item.partido.goles_local is not none and item.partido.goles_visitante is not none %}
+                                        {% if item.partido.goles_local is not none and item.partido.goles_visitante is
+                                        not none %}
 
-                                            <span class="badge bg-success fs-6">
+                                        <span class="badge bg-success fs-6">
 
-                                                {{ item.partido.goles_local }}
+                                            {{ item.partido.goles_local }}
 
-                                                -
+                                            -
 
-                                                {{ item.partido.goles_visitante }}
+                                            {{ item.partido.goles_visitante }}
 
-                                            </span>
+                                        </span>
 
                                         {% else %}
 
-                                            <span class="badge bg-secondary">
+                                        <span class="badge bg-secondary">
 
-                                                Sin jugar
+                                            Sin jugar
 
-                                            </span>
+                                        </span>
 
                                         {% endif %}
 
@@ -166,9 +165,8 @@
 
                     </h2>
 
-                    <div id="partido{{ item.partido.id }}"
-                         class="accordion-collapse collapse"
-                         data-bs-parent="#accordionPartidos">
+                    <div id="partido{{ item.partido.id }}" class="accordion-collapse collapse"
+                        data-bs-parent="#accordionPartidos">
 
                         <div class="accordion-body">
 
@@ -206,11 +204,22 @@
 
                                             <td>
 
-                                                {{ pred.goles_local }}
+                                                {% if item.partido.numero_partido <= 71 %}
+                                                    {{ pred.goles_local }}
+                                                    -
+                                                    {{ pred.goles_visitante }}
+                                                {% else %}
+                                                
+                                                {{ pred.equipo_local }} : {{ pred.goles_local }}
 
                                                 -
 
-                                                {{ pred.goles_visitante }}
+                                                {{ pred.equipo_visitante }} : {{ pred.goles_visitante }}
+
+                                                {% endif %}
+
+
+
 
                                             </td>
 
@@ -218,27 +227,27 @@
 
                                                 {% if pred.puntos == 3 %}
 
-                                                    <span class="badge bg-success">
+                                                <span class="badge bg-success">
 
-                                                        3 pts
+                                                    3 pts
 
-                                                    </span>
+                                                </span>
 
                                                 {% elif pred.puntos == 1 %}
 
-                                                    <span class="badge bg-warning text-dark">
+                                                <span class="badge bg-warning text-dark">
 
-                                                        1 pt
+                                                    1 pt
 
-                                                    </span>
+                                                </span>
 
                                                 {% else %}
 
-                                                    <span class="badge bg-danger">
+                                                <span class="badge bg-danger">
 
-                                                        0 pts
+                                                    0 pts
 
-                                                    </span>
+                                                </span>
 
                                                 {% endif %}
 

@@ -1653,47 +1653,59 @@ def resultados_partidos():
 
     datos = []
 
+
     for partido in partidos:
 
-        predicciones = db.session.query(
-            Usuario.nombre.label('usuario'),
-            Prediccion.goles_local,
-            Prediccion.goles_visitante,
-            Prediccion.puntos
-        ).join(
-            Usuario,
-            Usuario.id == Prediccion.usuario_id
-        ).filter(
-            Prediccion.partido_id == partido.id
-        ).order_by(
-            Prediccion.puntos.desc(),
-            Usuario.nombre.asc()
-        ).all()
+        # Fase de grupos
+        if partido.numero_partido <= 72:
 
-        total_3 = sum(
-            1 for pred in predicciones
-            if pred.puntos == 3
-        )
+            predicciones = db.session.query(
+                Usuario.nombre.label("usuario"),
+                Prediccion.goles_local,
+                Prediccion.goles_visitante,
+                Prediccion.puntos
+            ).join(
+                Usuario,
+                Usuario.id == Prediccion.usuario_id
+            ).filter(
+                Prediccion.partido_id == partido.id
+            ).order_by(
+                Prediccion.puntos.desc(),
+                Usuario.nombre.asc()
+            ).all()
 
-        total_1 = sum(
-            1 for pred in predicciones
-            if pred.puntos == 1
-        )
+        # Fases eliminatorias
+        else:
 
-        total_0 = sum(
-            1 for pred in predicciones
-            if pred.puntos == 0
-        )
+            predicciones = db.session.query(
+                Usuario.nombre.label("usuario"),
+                PartidoEliminacion.equipo_local,
+                PartidoEliminacion.equipo_visitante,
+                PartidoEliminacion.goles_local,
+                PartidoEliminacion.goles_visitante,
+                PartidoEliminacion.puntos
+            ).join(
+                Usuario,
+                Usuario.id == PartidoEliminacion.usuario_id
+            ).filter(
+                PartidoEliminacion.numero_partido == partido.numero_partido
+            ).order_by(
+                PartidoEliminacion.puntos.desc(),
+                Usuario.nombre.asc()
+            ).all()
+
+        total_3 = sum(1 for p in predicciones if p.puntos == 3)
+        total_1 = sum(1 for p in predicciones if p.puntos == 1)
+        total_0 = sum(1 for p in predicciones if p.puntos == 0)
 
         datos.append({
-
-            'partido': partido,
-            'predicciones': predicciones,
-            'total_3': total_3,
-            'total_1': total_1,
-            'total_0': total_0
-
+            "partido": partido,
+            "predicciones": predicciones,
+            "total_3": total_3,
+            "total_1": total_1,
+            "total_0": total_0
         })
+
 
     return render_template(
         'usuario/resultados_partidos.html',
