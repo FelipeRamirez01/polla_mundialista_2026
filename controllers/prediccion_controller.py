@@ -1716,6 +1716,13 @@ def resultados_partidos():
     )
 
 
+
+
+def ahora_colombia():
+    return datetime.now(
+        ZoneInfo("America/Bogota")
+    )
+
 @app.route('/usuario/guardar_eliminatoria', methods=['POST'])
 @login_required
 def guardar_eliminatoria():
@@ -1802,6 +1809,7 @@ def guardar_eliminatoria():
             goles_visitante=goles_visitante,
 
             ganador=ganador,
+            fecha_registro=ahora_colombia(),
 
             perdedor=perdedor
 

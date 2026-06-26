@@ -1,4 +1,6 @@
 from extensions import db
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 class PartidoEliminacion(db.Model):
 
@@ -42,6 +44,14 @@ class PartidoEliminacion(db.Model):
     partido_origen_visitante = db.Column(db.Integer)
 
     es_oficial = db.Column(db.Boolean,default=False)
+
+    fecha_registro = db.Column(
+        db.DateTime,
+        default=lambda: datetime.now(
+            ZoneInfo("America/Bogota")
+        ),
+        
+    )
 
     puntos = db.Column(
         db.Integer,
