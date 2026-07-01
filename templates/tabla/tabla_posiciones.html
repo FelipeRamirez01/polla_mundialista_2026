@@ -29,6 +29,84 @@
                 Tabla de Posiciones - Grupo {{ grupo }}
             </h4>
         </div>
+
+        <div class="alert alert-light border shadow-sm mb-3">
+
+            <div class="row text-center">
+
+                <div class="col-md-3">
+
+                    <span class="badge bg-success fs-6">
+
+                        ⭐ Total
+
+                    </span>
+
+                    <div class="small text-muted mt-1">
+
+                        Suma de todos los puntos obtenidos.
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <span class="badge bg-primary">
+
+                        G
+
+                    </span>
+
+                    <strong> Grupos</strong>
+
+                    <div class="small text-muted mt-1">
+
+                        Puntos obtenidos en la fase de grupos.
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <span class="badge bg-warning text-dark">
+
+                        F
+
+                    </span>
+
+                    <strong> Finales</strong>
+
+                    <div class="small text-muted mt-1">
+
+                        Puntos obtenidos por acertar los resultados de las fases finales.
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <span class="badge bg-info text-dark">
+
+                        C
+
+                    </span>
+
+                    <strong> Clasificación</strong>
+
+                    <div class="small text-muted mt-1">
+
+                        Puntos obtenidos por acertar los equipos clasificados en cada ronda.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
         <div class="card-body">
 
             {% if tabla %}
@@ -99,27 +177,47 @@
 
                             <!-- PUNTOS -->
 
-
                             <td>
 
-                                <span class="badge bg-success fs-6 px-3 py-2">
+                                <div>
 
-                                    <i class="bi bi-star-fill"></i>
+                                    <span class="badge bg-success fs-6">
 
-                                    {{ usuario.total_puntos }} pts
+                                        <i class="bi bi-star-fill"></i>
 
-                                </span>
+                                        {{ usuario.total_puntos }} pts
 
-                                <small class="text-muted">
+                                    </span>
 
-                                    Grupos: {{ usuario.puntos_grupos }}
-                                    |
-                                    Eliminación: {{ usuario.puntos_eliminacion }}
+                                </div>
 
-                                </small>
+                                <div class="mt-1" style="font-size:12px;">
+
+                                    <span class="text-primary fw-semibold">
+
+                                        G: {{ usuario.puntos_grupos }}
+
+                                    </span>
+
+                                    ·
+
+                                    <span class="text-warning fw-semibold">
+
+                                        F: {{ usuario.puntos_eliminacion }}
+
+                                    </span>
+
+                                    ·
+
+                                    <span class="text-success fw-semibold">
+
+                                        C: {{ usuario.puntos_clasificacion }}
+
+                                    </span>
+
+                                </div>
 
                             </td>
-
 
                             <!-- PREDICCIONES -->
                             <td>
