@@ -223,15 +223,15 @@ def actualizar_puntos_partido(partido_id):
         # Equipo ganador real
         if partido.goles_local > partido.goles_visitante:
 
-            equipo_ganador_real = partido.equipo_local
+            equipo_ganador_real = "Local"
 
         elif partido.goles_visitante > partido.goles_local:
 
-            equipo_ganador_real = partido.equipo_visitante
+            equipo_ganador_real = "Visitante"
 
         else:
 
-            equipo_ganador_real = None   # Empate (definido por penales)
+            equipo_ganador_real = "Empate"   # Empate (definido por penales)
 
         predicciones_eliminacion = PartidoEliminacion.query.filter_by(
             numero_partido=partido.numero_partido
@@ -242,40 +242,24 @@ def actualizar_puntos_partido(partido_id):
             # Equipo ganador predicho
             if pred.goles_local > pred.goles_visitante:
 
-                equipo_ganador_predicho = pred.equipo_local
+                equipo_ganador_predicho = "Local"
 
             elif pred.goles_visitante > pred.goles_local:
 
-                equipo_ganador_predicho = pred.equipo_visitante
+                equipo_ganador_predicho = "Visitante"
 
             else:
 
                 # Si el usuario predijo empate, debe escoger el ganador
-                equipo_ganador_predicho = pred.ganador
+                equipo_ganador_predicho = None
 
-            # 3 puntos por marcador exacto y equipos correctos
+            # 3 puntos por marcador exacto 
             if (
 
                 (
-                    pred.equipo_local == partido.equipo_local
-                    and
-                    pred.equipo_visitante == partido.equipo_visitante
-                    and
                     pred.goles_local == partido.goles_local
                     and
                     pred.goles_visitante == partido.goles_visitante
-                )
-
-                or
-
-                (
-                    pred.equipo_local == partido.equipo_visitante
-                    and
-                    pred.equipo_visitante == partido.equipo_local
-                    and
-                    pred.goles_local == partido.goles_visitante
-                    and
-                    pred.goles_visitante == partido.goles_local
                 )
 
             ):
@@ -284,11 +268,7 @@ def actualizar_puntos_partido(partido_id):
 
             # 1 punto por acertar el equipo ganador
             elif (
-                equipo_ganador_predicho
-                and
-                ganador_real
-                and
-                equipo_ganador_predicho == ganador_real
+                equipo_ganador_real == equipo_ganador_predicho
             ):
 
                 pred.puntos = 1
@@ -505,10 +485,12 @@ def validar_clasificados_dieciseisavos():
     db.session.commit()
 
 
-def validar_clasificados_fase(numero_inicio,numero_fin,fase):
+def validar_clasificados_fase(numero_inicio, numero_fin, fase):
 
+    # ==========================
+    # Partidos reales de la fase
+    # ==========================
 
-    # Equipos reales clasificados a la fase
     partidos_reales = Partido.query.filter(
         Partido.numero_partido.between(
             numero_inicio,
@@ -516,34 +498,44 @@ def validar_clasificados_fase(numero_inicio,numero_fin,fase):
         )
     ).all()
 
-    equipos_reales = set()
+    # Diccionario: numero_partido -> Partido
+    partidos_dict = {
+        partido.numero_partido: partido
+        for partido in partidos_reales
+    }
 
-    for partido in partidos_reales:
+    # ==========================
+    # Predicciones
+    # ==========================
 
-        equipos_reales.add(
-            partido.equipo_local
-        )
-
-        equipos_reales.add(
-            partido.equipo_visitante
-        )
-
-    # Predicciones usuarios
     predicciones = PartidoEliminacion.query.filter_by(
         fase=fase
     ).all()
 
     for prediccion in predicciones:
 
+        partido_real = partidos_dict.get(
+            prediccion.numero_partido
+        )
+
         puntos = 0
 
-        if prediccion.equipo_local in equipos_reales:
-            puntos += 5
+        if partido_real:
 
-        if prediccion.equipo_visitante in equipos_reales:
-            puntos += 5
+            equipos_reales = {
+                partido_real.equipo_local,
+                partido_real.equipo_visitante
+            }
 
-        prediccion.puntos = puntos
+            # Equipo escogido como local
+            if prediccion.equipo_local in equipos_reales:
+                puntos += 5
+
+            # Equipo escogido como visitante
+            if prediccion.equipo_visitante in equipos_reales:
+                puntos += 5
+
+        prediccion.puntos_clasificacion = puntos
 
     db.session.commit()
     
@@ -913,6 +905,13 @@ def validacion_clasificados(fase):
         Partido.numero_partido
     ).all()
 
+
+    # Diccionario para acceder al partido por número
+    partidos_dict = {
+        partido.numero_partido: partido
+        for partido in partidos_reales
+    }
+
     equipos_reales = set()
 
     for partido in partidos_reales:
@@ -970,20 +969,33 @@ def validacion_clasificados(fase):
         
         for pred in predicciones:
 
-            partido_real = Partido.query.filter_by(
-                numero_partido=pred.numero_partido
-            ).first()
+            partido_real = partidos_dict.get(
+                pred.numero_partido
+            )
 
             puntos_partido = 0
 
-            acierto_local = pred.equipo_local in equipos_reales
-            acierto_visitante = pred.equipo_visitante in equipos_reales
+            acierto_local = False
+            acierto_visitante = False
 
-            if acierto_local:
-                puntos_partido += 5
+            if partido_real:
 
-            if acierto_visitante:
-                puntos_partido += 5
+                equipos_partido = {
+                    partido_real.equipo_local,
+                    partido_real.equipo_visitante
+                }
+
+                # Equipo escogido como local por el usuario
+                if pred.equipo_local in equipos_partido:
+
+                    acierto_local = True
+                    puntos_partido += 5
+
+                # Equipo escogido como visitante por el usuario
+                if pred.equipo_visitante in equipos_partido:
+
+                    acierto_visitante = True
+                    puntos_partido += 5
 
             total_puntos += puntos_partido
 

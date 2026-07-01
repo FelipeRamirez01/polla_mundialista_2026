@@ -27,11 +27,19 @@ def tabla_posiciones():
     ).subquery()
 
     puntos_eliminacion = db.session.query(
-        PartidoEliminacion.usuario_id,
+            PartidoEliminacion.usuario_id,
+
+    (
         func.coalesce(
             func.sum(PartidoEliminacion.puntos),
             0
-        ).label('puntos_eliminacion')
+        )
+        +
+        func.coalesce(
+            func.sum(PartidoEliminacion.puntos_clasificacion),
+            0
+        )
+    ).label("puntos_eliminacion")
     ).group_by(
         PartidoEliminacion.usuario_id
     ).subquery()
