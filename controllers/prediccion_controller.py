@@ -415,40 +415,35 @@ def clasificacion_16():
 from flask import render_template
 from flask_login import login_required, current_user
 
-def obtener_mejores_terceros(usuario_id):
-
-    tablas = calcular_tablas_usuario(usuario_id)
+def obtener_mejores_terceros(tablas):
 
     terceros = []
 
     for grupo, tabla in tablas.items():
 
-        if len(tabla) >= 3:
+        if len(tabla) < 3:
+            continue
 
-            terceros.append({
+        terceros.append({
 
-                'grupo': grupo,
+            "grupo": grupo,
 
-                'equipo': tabla[2][0],
+            "equipo": tabla[2][0],
 
-                'puntos': tabla[2][1]['puntos'],
+            "puntos": tabla[2][1]["puntos"],
 
-                'dg': tabla[2][1]['dg'],
+            "dg": tabla[2][1]["dg"],
 
-                'gf': tabla[2][1]['gf']
+            "gf": tabla[2][1]["gf"]
 
-            })
+        })
 
-    terceros = sorted(
+    terceros.sort(
 
-        terceros,
-
-        key=lambda x: (
-
-            x['puntos'],
-            x['dg'],
-            x['gf']
-
+        key=lambda x:(
+            x["puntos"],
+            x["dg"],
+            x["gf"]
         ),
 
         reverse=True
@@ -467,92 +462,104 @@ from collections import defaultdict
 from models.partido import Partido
 from models.prediccion import Prediccion
 
+from collections import defaultdict
+
 def calcular_tablas_usuario(usuario_id):
 
     grupos = ['A','B','C','D','E','F','G','H','I','J','K','L']
 
+    # Todos los partidos
+    partidos = Partido.query.filter(
+        Partido.grupo.in_(grupos)
+    ).all()
+
+    # Todas las predicciones del usuario
+    predicciones = Prediccion.query.filter_by(
+        usuario_id=usuario_id
+    ).all()
+
+    predicciones_dict = {
+        p.partido_id: p
+        for p in predicciones
+    }
+
     tablas = {}
+
+    equipos_grupo = {
+        g: defaultdict(lambda:{
+            "puntos":0,
+            "gf":0,
+            "gc":0,
+            "dg":0
+        })
+        for g in grupos
+    }
+
+    puntos_por_grupo = {g: 0 for g in grupos}
+
+    for partido in partidos:
+
+        pred = predicciones_dict.get(partido.id)
+
+        if not pred:
+            continue
+        
+        # Acumular puntos obtenidos en ese grupo
+        puntos_por_grupo[partido.grupo] += pred.puntos
+
+        equipos = equipos_grupo[partido.grupo]
+
+        local = partido.equipo_local
+        visita = partido.equipo_visitante
+
+        gl = pred.goles_local
+        gv = pred.goles_visitante
+
+        equipos[local]["gf"] += gl
+        equipos[local]["gc"] += gv
+
+        equipos[visita]["gf"] += gv
+        equipos[visita]["gc"] += gl
+
+        if gl > gv:
+
+            equipos[local]["puntos"] += 3
+
+        elif gv > gl:
+
+            equipos[visita]["puntos"] += 3
+
+        else:
+
+            equipos[local]["puntos"] += 1
+            equipos[visita]["puntos"] += 1
 
     for grupo in grupos:
 
-        equipos = defaultdict(lambda: {
+        for equipo in equipos_grupo[grupo]:
 
-            'puntos': 0,
-            'gf': 0,
-            'gc': 0,
-            'dg': 0
-
-        })
-
-        partidos = Partido.query.filter_by(
-            grupo=grupo
-        ).all()
-
-        for partido in partidos:
-
-            prediccion = Prediccion.query.filter_by(
-
-                usuario_id=usuario_id,
-                partido_id=partido.id
-
-            ).first()
-
-            if not prediccion:
-                continue
-
-            local = partido.equipo_local
-            visitante = partido.equipo_visitante
-
-            gl = prediccion.goles_local
-            gv = prediccion.goles_visitante
-
-            equipos[local]['gf'] += gl
-            equipos[local]['gc'] += gv
-
-            equipos[visitante]['gf'] += gv
-            equipos[visitante]['gc'] += gl
-
-            if gl > gv:
-
-                equipos[local]['puntos'] += 3
-
-            elif gv > gl:
-
-                equipos[visitante]['puntos'] += 3
-
-            else:
-
-                equipos[local]['puntos'] += 1
-                equipos[visitante]['puntos'] += 1
-
-        for equipo in equipos:
-
-            equipos[equipo]['dg'] = (
-
-                equipos[equipo]['gf']
-                - equipos[equipo]['gc']
-
+            equipos_grupo[grupo][equipo]["dg"] = (
+                equipos_grupo[grupo][equipo]["gf"]
+                -
+                equipos_grupo[grupo][equipo]["gc"]
             )
 
-        tabla = sorted(
+        tablas[grupo] = sorted(
 
-            equipos.items(),
+            equipos_grupo[grupo].items(),
 
-            key=lambda x: (
-
-                x[1]['puntos'],
-                x[1]['dg'],
-                x[1]['gf']
-
+            key=lambda x:(
+                x[1]["puntos"],
+                x[1]["dg"],
+                x[1]["gf"]
             ),
 
             reverse=True
 
         )
 
-        tablas[grupo] = tabla
+    return tablas, puntos_por_grupo
 
-    return tablas
 
 
 @app.route('/usuario/mejores_terceros')
@@ -1548,21 +1555,31 @@ def ver_bracket_usuario(usuario_id):
 
     usuario = Usuario.query.get_or_404(usuario_id)
 
+    # Orden de grupos
     orden_grupos = [
-        'A','B','C','D','E','F',
-        'G','H','I','J','K','L'
+        "A","B","C","D","E","F",
+        "G","H","I","J","K","L"
     ]
 
-    grupos = {}
+    # ==========================
+    # Todos los partidos de grupos
+    # (1 sola consulta)
+    # ==========================
+    partidos = Partido.query.filter(
+        Partido.grupo.in_(orden_grupos)
+    ).order_by(
+        Partido.grupo.asc(),
+        Partido.fecha.asc()
+    ).all()
 
-    for letra in orden_grupos:
+    grupos = {g: [] for g in orden_grupos}
 
-        grupos[letra] = Partido.query.filter_by(
-            grupo=letra
-        ).order_by(
-            Partido.fecha.asc()
-        ).all()
+    for partido in partidos:
+        grupos[partido.grupo].append(partido)
 
+    # ==========================
+    # Predicciones usuario
+    # ==========================
     predicciones = Prediccion.query.filter_by(
         usuario_id=usuario_id
     ).all()
@@ -1572,14 +1589,9 @@ def ver_bracket_usuario(usuario_id):
         for p in predicciones
     }
 
-    tablas = calcular_tablas_usuario(
-        usuario_id
-    )
-
-    mejores_terceros = obtener_mejores_terceros(
-        usuario_id
-    )
-
+    # ==========================
+    # Eliminación usuario
+    # ==========================
     eliminacion = PartidoEliminacion.query.filter_by(
         usuario_id=usuario_id
     ).all()
@@ -1589,14 +1601,30 @@ def ver_bracket_usuario(usuario_id):
         for p in eliminacion
     }
 
+    # ==========================
+    # Tablas calculadas
+    # ==========================
+    tablas, puntos_por_grupo = calcular_tablas_usuario(usuario_id)
+
+    mejores_terceros = obtener_mejores_terceros(tablas)
+
     return render_template(
-        'usuario/bracket.html',
+
+        "usuario/bracket.html",
+
         usuario=usuario,
+
         grupos=grupos,
+
         tablas=tablas,
+
         mejores_terceros=mejores_terceros,
+
         predicciones_dict=predicciones_dict,
-        datos=datos
+
+        datos=datos,
+        puntos_por_grupo=puntos_por_grupo
+
     )
 
 from datetime import datetime, date

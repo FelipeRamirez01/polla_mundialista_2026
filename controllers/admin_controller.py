@@ -487,9 +487,16 @@ def validar_clasificados_dieciseisavos():
 
 def validar_clasificados_fase(numero_inicio, numero_fin, fase):
 
-    # ==========================
-    # Partidos reales de la fase
-    # ==========================
+    puntajes = {
+        "Dieciseisavos": 5,
+        "Octavos": 8,
+        "Cuartos": 10,
+        "Semifinal": 12,
+        "Final": 15,
+        "Campeón": 20
+    }
+
+    puntos_fase = puntajes.get(fase, 5)
 
     partidos_reales = Partido.query.filter(
         Partido.numero_partido.between(
@@ -498,15 +505,10 @@ def validar_clasificados_fase(numero_inicio, numero_fin, fase):
         )
     ).all()
 
-    # Diccionario: numero_partido -> Partido
     partidos_dict = {
         partido.numero_partido: partido
         for partido in partidos_reales
     }
-
-    # ==========================
-    # Predicciones
-    # ==========================
 
     predicciones = PartidoEliminacion.query.filter_by(
         fase=fase
@@ -520,20 +522,40 @@ def validar_clasificados_fase(numero_inicio, numero_fin, fase):
 
         puntos = 0
 
-        if partido_real:
+        if not partido_real:
+            prediccion.puntos_clasificacion = 0
+            continue
 
-            equipos_reales = {
-                partido_real.equipo_local,
-                partido_real.equipo_visitante
-            }
+        # ===============================
+        # CAMPEON
+        # ===============================
+        
 
-            # Equipo escogido como local
-            if prediccion.equipo_local in equipos_reales:
-                puntos += 5
+        if ( fase == "Final"
+            and
+            prediccion.ganador
+            and
+            partido_real.ganador
+            and
+            prediccion.ganador == partido_real.ganador
+            ):
+                puntos += 20
 
-            # Equipo escogido como visitante
-            if prediccion.equipo_visitante in equipos_reales:
-                puntos += 5
+        # ===============================
+        # RESTO DE FASES
+        # ===============================
+        
+
+        equipos_reales = {
+            partido_real.equipo_local,
+            partido_real.equipo_visitante
+        }
+
+        if prediccion.equipo_local in equipos_reales:
+            puntos += puntos_fase
+
+        if prediccion.equipo_visitante in equipos_reales:
+            puntos += puntos_fase
 
         prediccion.puntos_clasificacion = puntos
 
@@ -888,10 +910,23 @@ def validacion_clasificados(fase):
         "Final": (104, 104)
     }
 
+   
+
     if fase not in fases:
         abort(404)
 
     inicio, fin = fases[fase]
+
+    puntajes = {
+        "Dieciseisavos": 5,
+        "Octavos": 8,
+        "Cuartos": 10,
+        "Semifinal": 12,
+        "Final": 15,
+        "Campeón": 20
+    }
+
+    puntos_fase = puntajes.get(fase, 5)
 
     grupo_filtro = "Amigos Mundial"  # request.args.get("grupo", None)
 
@@ -940,11 +975,7 @@ def validacion_clasificados(fase):
 
     datos = []
 
-    resumen = {
-        "10": 0,
-        "5": 0,
-        "0": 0
-    }
+    resumen = {}
 
     # ============================
     # RECORRER USUARIOS
@@ -966,6 +997,7 @@ def validacion_clasificados(fase):
 
         total_puntos = 0
 
+        equipos_acertados = 0    
         
         for pred in predicciones:
 
@@ -977,25 +1009,55 @@ def validacion_clasificados(fase):
 
             acierto_local = False
             acierto_visitante = False
+            acierto_campeon = False
+
+            if acierto_local:
+                equipos_acertados += 1
+
+            if acierto_visitante:
+                equipos_acertados += 1  
 
             if partido_real:
 
+                # ==========================
+                # CAMPEÓN
+                # ==========================
+
+
+
+                if (fase == "Final"
+                    and
+                        pred.ganador
+                        and
+                        partido_real.ganador
+                        and
+                        pred.ganador == partido_real.ganador
+                ):
+
+                    acierto_campeon = True
+                    puntos_partido = 20
+
+                # ==========================
+                # RESTO DE FASES
+                # ==========================
+
+
                 equipos_partido = {
-                    partido_real.equipo_local,
-                    partido_real.equipo_visitante
+                        partido_real.equipo_local,
+                        partido_real.equipo_visitante
                 }
 
-                # Equipo escogido como local por el usuario
                 if pred.equipo_local in equipos_partido:
 
-                    acierto_local = True
-                    puntos_partido += 5
+                        acierto_local = True
+                        puntos_partido += puntos_fase
+                        equipos_acertados += 1
 
-                # Equipo escogido como visitante por el usuario
                 if pred.equipo_visitante in equipos_partido:
 
-                    acierto_visitante = True
-                    puntos_partido += 5
+                        acierto_visitante = True
+                        puntos_partido += puntos_fase
+                        equipos_acertados += 1
 
             total_puntos += puntos_partido
 
@@ -1006,29 +1068,34 @@ def validacion_clasificados(fase):
                 "pred_local": pred.equipo_local,
                 "pred_visitante": pred.equipo_visitante,
 
+                "pred_ganador": pred.ganador,
+
                 "real_local": partido_real.equipo_local if partido_real else "",
                 "real_visitante": partido_real.equipo_visitante if partido_real else "",
+                "real_ganador": partido_real.ganador if partido_real else "",
 
                 "acierto_local": acierto_local,
                 "acierto_visitante": acierto_visitante,
+                "acierto_campeon": acierto_campeon,
+
+                "aciertos": (
+                    int(acierto_local)
+                    + int(acierto_visitante)
+                    + int(acierto_campeon)
+                ),
 
                 "puntos": puntos_partido
 
             })
 
+        
 
+        clave = str(total_puntos)
 
-        if total_puntos == 10:
+        if clave not in resumen:
+            resumen[clave] = 0
 
-            resumen["10"] += 1
-
-        elif total_puntos == 5:
-
-            resumen["5"] += 1
-
-        else:
-
-            resumen["0"] += 1
+        resumen[clave] += 1
 
         datos.append({
 
@@ -1038,7 +1105,10 @@ def validacion_clasificados(fase):
 
             "detalle": detalle,
 
-            "total": total_puntos
+            "total": total_puntos,
+
+            "equipos_acertados": equipos_acertados
+
 
         })
 
@@ -1102,6 +1172,7 @@ def validacion_clasificados(fase):
 
         resumen=resumen,
 
-        equipos_reales=sorted(equipos_reales)
+        equipos_reales=sorted(equipos_reales),
+        
 
     )

@@ -193,7 +193,7 @@
 
                                             <h3 class="text-primary mb-0">
 
-                                                {{ (item.total/5)|int }}
+                                                {{ item.equipos_acertados }}
 
                                             </h3>
 
@@ -286,7 +286,7 @@
 
                                             <td class="text-center">
 
-                                                {% if p.puntos == 10 %}
+                                                {% if p.aciertos == 2 %}
 
                                                 <span class="badge bg-success">
 
@@ -294,7 +294,7 @@
 
                                                 </span>
 
-                                                {% elif p.puntos == 5 %}
+                                                {% elif p.aciertos == 1 %}
 
                                                 <span class="badge bg-warning text-dark">
 
@@ -316,7 +316,7 @@
 
                                             <td class="text-center">
 
-                                                <span class="badge
+                                                {% if p.numero <= 88%} <span class="badge
                                     {% if p.puntos == 10 %}
                                         bg-success
                                     {% elif p.puntos == 5 %}
@@ -324,10 +324,54 @@
                                     {% else %}
                                         bg-danger
                                     {% endif %} fs-6">
+                                                    {% elif p.numero > 88 and p.numero <= 96 %} <span class="badge
+                                    {% if p.puntos == 16 %}
+                                        bg-success
+                                    {% elif p.puntos == 8 %}
+                                        bg-warning text-dark
+                                    {% else %}
+                                        bg-danger
+                                    {% endif %} fs-6">
+                                                        {% elif p.numero > 96 and p.numero <= 100 %} <span class="badge
+                                    {% if p.puntos == 20 %}
+                                        bg-success
+                                    {% elif p.puntos == 10 %}
+                                        bg-warning text-dark
+                                    {% else %}
+                                        bg-danger
+                                    {% endif %} fs-6">
+                                                            {% elif p.numero > 100 and p.numero <= 102 %} <span class="badge
+                                    {% if p.puntos == 24 %}
+                                        bg-success
+                                    {% elif p.puntos == 12 %}
+                                        bg-warning text-dark
+                                    {% else %}
+                                        bg-danger
+                                    {% endif %} fs-6">
+                                                                {% elif p.numero == 103 %} <span class="badge
+                                    {% if p.puntos == 26 %}
+                                        bg-success
+                                    {% elif p.puntos == 13 %}
+                                        bg-warning text-dark
+                                    {% else %}
+                                        bg-danger
+                                    {% endif %} fs-6">
+                                                                    {% else %}
+                                                                    <span class="badge
+                                    {% if p.puntos == 30 %}
+                                        bg-success
+                                    {% elif p.puntos == 15 %}
+                                        bg-warning text-dark
+                                    {% else %}
+                                        bg-danger
+                                    {% endif %} fs-6">
 
-                                                    ⭐ {{ p.puntos }}
+                                                                        {% endif %}
 
-                                                </span>
+
+                                                                        ⭐ {{ p.puntos }}
+
+                                                                    </span>
 
                                             </td>
 
