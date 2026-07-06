@@ -95,6 +95,84 @@ def predicciones():
         siguiente=siguiente
     )
 
+@app.route('/usuario/bracket/<int:usuario_id>')
+@login_required
+def ver_bracket_usuario(usuario_id):
+
+    usuario = Usuario.query.get_or_404(usuario_id)
+
+    # Orden de grupos
+    orden_grupos = [
+        "A","B","C","D","E","F",
+        "G","H","I","J","K","L"
+    ]
+
+    # ==========================
+    # Todos los partidos de grupos
+    # (1 sola consulta)
+    # ==========================
+    partidos = Partido.query.filter(
+        Partido.grupo.in_(orden_grupos)
+    ).order_by(
+        Partido.grupo.asc(),
+        Partido.fecha.asc()
+    ).all()
+
+    grupos = {g: [] for g in orden_grupos}
+
+    for partido in partidos:
+        grupos[partido.grupo].append(partido)
+
+    # ==========================
+    # Predicciones usuario
+    # ==========================
+    predicciones = Prediccion.query.filter_by(
+        usuario_id=usuario_id
+    ).all()
+
+    predicciones_dict = {
+        p.partido_id: p
+        for p in predicciones
+    }
+
+    # ==========================
+    # Eliminación usuario
+    # ==========================
+    eliminacion = PartidoEliminacion.query.filter_by(
+        usuario_id=usuario_id
+    ).all()
+
+    datos = {
+        p.numero_partido: p
+        for p in eliminacion
+    }
+
+    # ==========================
+    # Tablas calculadas
+    # ==========================
+    tablas, puntos_por_grupo = calcular_tablas_usuario(usuario_id)
+
+    mejores_terceros = obtener_mejores_terceros(tablas)
+
+    return render_template(
+
+        "usuario/bracket.html",
+
+        usuario=usuario,
+
+        grupos=grupos,
+
+        tablas=tablas,
+
+        mejores_terceros=mejores_terceros,
+
+        predicciones_dict=predicciones_dict,
+
+        datos=datos,
+        puntos_por_grupo=puntos_por_grupo
+
+    )
+
 
 @app.route('/usuario/predicciones/guardar', methods=['POST'])
 @login_required
@@ -1477,155 +1555,13 @@ def guardar_final():
 
     flash('Campeón registrado correctamente')
 
-    return redirect(url_for('bracket'))
-
-
-@app.route('/usuario/bracket')
-@login_required
-def bracket():
-    usuario = Usuario.query.get_or_404(current_user.id)
-    orden_grupos = [
-        'A','B','C','D','E','F',
-        'G','H','I','J','K','L'
-    ]
-
-    grupos = {}
-
-    for letra in orden_grupos:
-
-        grupos[letra] = Partido.query.filter_by(
-            grupo=letra
-        ).order_by(
-            Partido.fecha.asc()
-        ).all()
-
-    predicciones = Prediccion.query.filter_by(
-        usuario_id=current_user.id
-    ).all()
-
-    predicciones_dict = {}
-
-    for pred in predicciones:
-
-        predicciones_dict[pred.partido_id] = pred
-
-    tablas = calcular_tablas_usuario(
-        current_user.id
-    )
-
-
-    
-
-    mejores_terceros = obtener_mejores_8_terceros(
-        current_user.id
-    )
-
-    eliminacion = PartidoEliminacion.query.filter_by(
-        usuario_id=current_user.id
-    ).all()
-
-    datos = {}
-
-    for partido in eliminacion:
-
-        datos[partido.numero_partido] = partido
+    return redirect(url_for(
+    "ver_bracket_usuario",
+    usuario_id=current_user.id
+))
 
 
 
-    return render_template(
-
-        'usuario/bracket.html',
-        usuario=usuario,
-
-        grupos=grupos,
-
-        tablas=tablas,
-
-        mejores_terceros=mejores_terceros,
-
-        predicciones_dict=predicciones_dict,
-
-        datos=datos
-
-    )
-
-@app.route('/usuario/bracket/<int:usuario_id>')
-@login_required
-def ver_bracket_usuario(usuario_id):
-
-    usuario = Usuario.query.get_or_404(usuario_id)
-
-    # Orden de grupos
-    orden_grupos = [
-        "A","B","C","D","E","F",
-        "G","H","I","J","K","L"
-    ]
-
-    # ==========================
-    # Todos los partidos de grupos
-    # (1 sola consulta)
-    # ==========================
-    partidos = Partido.query.filter(
-        Partido.grupo.in_(orden_grupos)
-    ).order_by(
-        Partido.grupo.asc(),
-        Partido.fecha.asc()
-    ).all()
-
-    grupos = {g: [] for g in orden_grupos}
-
-    for partido in partidos:
-        grupos[partido.grupo].append(partido)
-
-    # ==========================
-    # Predicciones usuario
-    # ==========================
-    predicciones = Prediccion.query.filter_by(
-        usuario_id=usuario_id
-    ).all()
-
-    predicciones_dict = {
-        p.partido_id: p
-        for p in predicciones
-    }
-
-    # ==========================
-    # Eliminación usuario
-    # ==========================
-    eliminacion = PartidoEliminacion.query.filter_by(
-        usuario_id=usuario_id
-    ).all()
-
-    datos = {
-        p.numero_partido: p
-        for p in eliminacion
-    }
-
-    # ==========================
-    # Tablas calculadas
-    # ==========================
-    tablas, puntos_por_grupo = calcular_tablas_usuario(usuario_id)
-
-    mejores_terceros = obtener_mejores_terceros(tablas)
-
-    return render_template(
-
-        "usuario/bracket.html",
-
-        usuario=usuario,
-
-        grupos=grupos,
-
-        tablas=tablas,
-
-        mejores_terceros=mejores_terceros,
-
-        predicciones_dict=predicciones_dict,
-
-        datos=datos,
-        puntos_por_grupo=puntos_por_grupo
-
-    )
 
 from datetime import datetime, date
 from zoneinfo import ZoneInfo
@@ -1858,8 +1794,16 @@ def guardar_eliminatoria():
         'Cuartos': 'cuartos',
         'Semifinal': 'semifinales',
         'Tercer Puesto': 'tercer_puesto',
-        'Final': 'bracket'
+        'Final': 'ver_bracket_usuario'
     }
+
+    if fase == "Final":
+        return redirect(
+            url_for(
+                "ver_bracket_usuario",
+                usuario_id=current_user.id
+            )
+        )
 
     return redirect(
         url_for(rutas[fase])
