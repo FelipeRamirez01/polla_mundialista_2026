@@ -41,6 +41,17 @@
 
         <div class="card-body">
 
+            {% if fase == "Campeon" %}
+
+
+
+            <span class="badge bg-success me-2 mb-2 fs-6">
+
+                {{ real_ganador }}
+
+            </span>
+            {% else %}
+
             {% for equipo in equipos_reales %}
 
             <span class="badge bg-success me-2 mb-2 fs-6">
@@ -49,7 +60,11 @@
 
             </span>
 
+
+
             {% endfor %}
+
+            {% endif %}
 
         </div>
 

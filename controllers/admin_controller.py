@@ -1037,6 +1037,8 @@ def validacion_clasificados(fase):
 
                     total_puntos += puntos_partido
 
+                    ganador_real = partido_real.ganador if partido_real else ""
+
                     detalle.append({
                        
                         "pred_ganador": pred.ganador,
@@ -1197,6 +1199,7 @@ def validacion_clasificados(fase):
         resumen=resumen,
 
         equipos_reales=sorted(equipos_reales),
+        real_ganador=ganador_real
         
 
     )
