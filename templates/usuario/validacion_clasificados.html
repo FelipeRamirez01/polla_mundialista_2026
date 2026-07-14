@@ -23,11 +23,21 @@
 
     <div class="card shadow mb-4">
 
+
+        {% if fase == "Campeon" %}
+        <div class="card-header bg-success text-white">
+
+            Equipo Campeón
+
+        </div>
+        {% else %}
+
         <div class="card-header bg-success text-white">
 
             Equipos Clasificados
 
         </div>
+        {% endif %}
 
         <div class="card-body">
 
@@ -150,6 +160,7 @@
 
                         <div class="accordion-body">
 
+                            {% if fase != "Campeon" %}
                             <!-- Resumen -->
                             <div class="card border-0 bg-light shadow-sm mb-4">
 
@@ -210,9 +221,92 @@
                                 </div>
 
                             </div>
-
+                            {% endif %}
                             <!-- Tabla -->
                             <div class="table-responsive">
+
+
+                                {% if fase == "Campeon" %}
+
+                                <table class="table table-bordered table-hover align-middle">
+
+                                    <thead class="table-dark">
+
+                                        <tr>
+
+                                            <th>Campeón Pronosticado</th>
+                                            <th>Campeón Real</th>
+                                            <th class="text-center">Resultado</th>
+                                            <th class="text-center">Puntos</th>
+
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+
+                                        {% for p in item.detalle %}
+
+                                        <tr>
+
+                                            <td class="text-center">
+
+                                                <span class="badge bg-primary fs-6">
+                                                    {{ p.pred_ganador }}
+                                                </span>
+
+                                            </td>
+
+                                            <td class="text-center">
+
+                                                <span class="badge bg-success fs-6">
+                                                    {{ p.real_ganador }}
+                                                </span>
+
+                                            </td>
+
+                                            <td class="text-center">
+
+                                                {% if p.acierto_campeon %}
+
+                                                <span class="badge bg-success">
+                                                    ✔ Acertó
+                                                </span>
+
+                                                {% else %}
+
+                                                <span class="badge bg-danger">
+                                                    ✖ No acertó
+                                                </span>
+
+                                                {% endif %}
+
+                                            </td>
+
+                                            <td class="text-center">
+
+                                                <span class="badge
+                    {% if p.puntos == 20 %}
+                        bg-success
+                    {% else %}
+                        bg-danger
+                    {% endif %} fs-6">
+
+                                                    ⭐ {{ p.puntos }}
+
+                                                </span>
+
+                                            </td>
+
+                                        </tr>
+
+                                        {% endfor %}
+
+                                    </tbody>
+
+                                </table>
+
+                                {% else %}
 
                                 <table class="table table-bordered table-hover align-middle">
 
@@ -382,6 +476,9 @@
                                     </tbody>
 
                                 </table>
+
+
+                                {% endif %}
 
                             </div>
 

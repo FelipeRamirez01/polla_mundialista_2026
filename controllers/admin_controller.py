@@ -907,7 +907,9 @@ def validacion_clasificados(fase):
         "Cuartos": (97, 100),
         "Semifinal": (101, 102),
         "Tercer Puesto": (103, 103),
-        "Final": (104, 104)
+        "Final": (104, 104),
+        "Campeon": (104, 104)
+
     }
 
    
@@ -1019,10 +1021,32 @@ def validacion_clasificados(fase):
 
             if partido_real:
 
-                # ==========================
-                # CAMPEÓN
-                # ==========================
+                # =====================================
+                # VALIDACIÓN DEL CAMPEÓN
+                # =====================================
+                if fase == "Campeon":
 
+                    acierto_campeon = (
+                        partido_real
+                        and pred.ganador
+                        and partido_real.ganador
+                        and pred.ganador == partido_real.ganador
+                    )
+
+                    puntos_partido = 20 if acierto_campeon else 0
+
+                    total_puntos += puntos_partido
+
+                    detalle.append({
+                       
+                        "pred_ganador": pred.ganador,
+                        "real_ganador": partido_real.ganador if partido_real else "",
+                        "acierto_campeon": acierto_campeon,
+                        "puntos": puntos_partido
+
+                    })
+
+                    continue
 
 
                 if (fase == "Final"
@@ -1035,7 +1059,7 @@ def validacion_clasificados(fase):
                 ):
 
                     acierto_campeon = True
-                    puntos_partido = 20
+                    puntos_partido += 20
 
                 # ==========================
                 # RESTO DE FASES
