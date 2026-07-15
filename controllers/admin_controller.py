@@ -1199,7 +1199,7 @@ def validacion_clasificados(fase):
         resumen=resumen,
 
         equipos_reales=sorted(equipos_reales),
-        real_ganador=ganador_real
+        real_ganador=ganador_real if ganador_real else ""
         
 
     )
