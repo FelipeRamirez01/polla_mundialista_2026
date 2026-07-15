@@ -983,6 +983,8 @@ def validacion_clasificados(fase):
     # RECORRER USUARIOS
     # ============================
 
+    ganador_real = None
+
     for usuario in usuarios:
 
         predicciones = PartidoEliminacion.query.filter(
@@ -1199,7 +1201,7 @@ def validacion_clasificados(fase):
         resumen=resumen,
 
         equipos_reales=sorted(equipos_reales),
-        real_ganador=ganador_real if ganador_real else None
+        real_ganador=ganador_real
         
 
     )
