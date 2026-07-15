@@ -412,7 +412,7 @@
 
                 {% for i in range(73,89) %}
                 {% if datos.get(i) %}
-                {% set ns.total = ns.total + datos[i].puntos %}
+                {% set ns.total = ns.total + datos[i].puntos + datos[i].puntos_clasificacion %}
                 {% endif %}
                 {% endfor %}
 
@@ -442,7 +442,7 @@
                             <br>
                             <small>
 
-                                Puntos Obtenidos: <strong>{{ datos[i].puntos }}</strong>
+                                Puntos Obtenidos: <strong>{{ datos[i].puntos_clasificacion + datos[i].puntos }}</strong>
 
                             </small>
 
@@ -497,7 +497,7 @@
 
                 {% for i in range(89,97) %}
                 {% if datos.get(i) %}
-                {% set ns.total = ns.total + datos[i].puntos %}
+                {% set ns.total = ns.total + datos[i].puntos + datos[i].puntos_clasificacion %}
                 {% endif %}
                 {% endfor %}
 
@@ -530,7 +530,7 @@
                             <br>
                             <small>
 
-                                Puntos Obtenidos: <strong>{{ datos[i].puntos }}</strong>
+                                Puntos Obtenidos: <strong>{{ datos[i].puntos_clasificacion + datos[i].puntos }}</strong>
 
                             </small>
 
@@ -586,7 +586,7 @@
 
                 {% for i in range(97,101) %}
                 {% if datos.get(i) %}
-                {% set ns.total = ns.total + datos[i].puntos %}
+                {% set ns.total = ns.total + datos[i].puntos + datos[i].puntos_clasificacion %}
                 {% endif %}
                 {% endfor %}
 
@@ -617,7 +617,7 @@
                             <br>
                             <small>
 
-                                Puntos Obtenidos: <strong>{{ datos[i].puntos }}</strong>
+                                Puntos Obtenidos: <strong>{{ datos[i].puntos_clasificacion + datos[i].puntos }}</strong>
 
                             </small>
 
@@ -672,7 +672,7 @@
 
                 {% for i in range(101,103) %}
                 {% if datos.get(i) %}
-                {% set ns.total = ns.total + datos[i].puntos %}
+                {% set ns.total = ns.total + datos[i].puntos + datos[i].puntos_clasificacion %}
                 {% endif %}
                 {% endfor %}
 
@@ -704,7 +704,7 @@
                             <br>
                             <small>
 
-                                Puntos Obtenidos: <strong>{{ datos[i].puntos }}</strong>
+                                Puntos Obtenidos: <strong>{{ datos[i].puntos_clasificacion + datos[i].puntos }}</strong>
 
                             </small>
 
@@ -771,7 +771,7 @@
                     <br>
                     <small>
 
-                        Puntos Obtenidos: <strong>{{ datos[103].puntos }}</strong>
+                        Puntos Obtenidos: <strong>{{ datos[103].puntos_clasificacion }}</strong>
 
                     </small>
 
@@ -816,7 +816,7 @@
                     <br>
                     <small>
 
-                        Puntos Obtenidos: <strong>{{ datos[104].puntos }}</strong>
+                        Puntos Obtenidos: <strong>{{ datos[104].puntos_clasificacion }}</strong>
 
                     </small>
 
