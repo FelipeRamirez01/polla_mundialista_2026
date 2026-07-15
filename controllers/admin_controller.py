@@ -924,6 +924,7 @@ def validacion_clasificados(fase):
         "Octavos": 8,
         "Cuartos": 10,
         "Semifinal": 12,
+        "Tercer Puesto": 13,
         "Final": 15,
         "Campeón": 20
     }
