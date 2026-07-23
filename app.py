@@ -10,7 +10,8 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'clave_super_segura'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = ('mysql+pymysql://root:utWabMlSivSEEkcYhNNfjtCTdDiXyVNN@acela.proxy.rlwy.net:25475/railway')
+#app.config['SQLALCHEMY_DATABASE_URI'] = ('mysql+pymysql://root:utWabMlSivSEEkcYhNNfjtCTdDiXyVNN@acela.proxy.rlwy.net:25475/railway')
+app.config['SQLALCHEMY_DATABASE_URI'] = ('mysql+pymysql://konectan_pipe:Pipejulian1@207.210.102.204:3306/konectan_polla')
 import os
 #app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv( 'DATABASE_URL')
 
@@ -18,6 +19,8 @@ import os
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+
+app.config['APPLICATION_ROOT'] = '/polla_mundial'
 
 # =========================
 # INICIALIZAR EXTENSIONS
